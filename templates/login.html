@@ -1,0 +1,20 @@
+{% extends 'auth_base.html' %}
+
+{% block auth_title %}Ingresar{% endblock %}
+
+{% block auth_message %}
+    ¿No tienes una cuenta?<a href="{% url 'register' %}" class="btn" style="color: #5F0293; border: none;"> Registrate aquí</a>
+{% endblock %}
+
+{% block form_fields %}
+    <div class="mb-4 form-group">
+        {{ form.username.label_tag }}
+        <input type="text" name="{{ form.username.name }}" class="form-control" id="{{ form.username.id_for_label }}">
+    </div>
+    <div class="mb-5 form-group">
+        {{ form.password.label_tag }}
+        <input type="password" name="{{ form.password.name }}" class="form-control" id="{{ form.password.id_for_label }}">
+    </div>
+{% endblock %}
+
+{% block submit_button %}Iniciar Sesión{% endblock %}
