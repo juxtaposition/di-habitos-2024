@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <link rel="stylesheet" href="{% static 'css/auth_base.css' %}">
+
+    <div class="row">
+        <div class="col-md-7 bg-left">
+            <img src="{% static 'img/logoComplete.png' %}" alt="logo" class="logo">
+        </div>
+            
+        <div class="col-md bg-right">
+            <div class="container-fluid login">
+                <div class="row-md title">
+                    {% block auth_title %}{% endblock %}
+                </div>
+
+                <div class="row-md message">
+                    {% block auth_message %}{% endblock %}
+                </div>
+                <div class="row-md">
+                    <form action="" method="post" class="mt-4">
+                        {% csrf_token %}
+                        {% block form_fields %}{% endblock %}
+                    </form>
+                    <div class="container">
+                        <div class="row-md btn btn-login">{% block submit_button %}{% endblock %}</div>
+                    </div>
+                </div>
+            </div>     
+        </div>
+    </div>
+{% endblock %}

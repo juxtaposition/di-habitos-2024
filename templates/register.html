@@ -1,0 +1,36 @@
+{% extends 'auth_base.html' %}
+
+{% block auth_title %}Registro{% endblock %}
+
+{% block auth_message %}
+    ¿Ya tienes una cuenta?<a href="{% url 'login' %}" class="btn" style="color: #5F0293; border: none;"> Inicia sesión aquí</a>
+{% endblock %}
+
+{% block form_fields %}
+    <div class="mb-2 row">
+        <div class="col-md-2"></div>
+        <div class="col-md form-group">
+            {{ form.first_name.label_tag }}
+            <input type="text" name="{{ form.fist_name.name }}" class="form-control" id="{{ form.first_name.id_for_label }}">
+        </div>
+        <div class="col-md form-group">
+            {{ form.last_name.label_tag }}
+            <input type="text" name="{{ form.last_name.name }}" class="form-control" id="{{ form.last_name.id_for_label }}">
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+    <div class="mb-4 form-group">
+        {{ form.username.label_tag }}
+        <input type="text" name="{{ form.username.name }}" class="form-control" id="{{ form.username.id_for_label }}">
+    </div>
+    <div class="mb-4 form-group">
+        {{ form.email.label_tag }}
+        <input type="email" name="{{ form.email.name }}" class="form-control" id="{{ form.email.id_for_label }}">
+    </div>
+    <div class="mb-5 form-group">
+        {{ form.password.label_tag }}
+        <input type="password" name="{{ form.password.name }}" class="form-control" id="{{ form.password.id_for_label }}">
+    </div>
+{% endblock %}
+
+{% block submit_button %}Registrarse{% endblock %}

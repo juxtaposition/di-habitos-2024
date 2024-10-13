@@ -1,0 +1,77 @@
+label {
+    font-family: "Anta", sans-serif;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.bg-left {
+    background: linear-gradient(to right, #5F0293, #ffffff); 
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bg-right { 
+    background-color: white;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-login {
+    background-color: #8500CF;
+    border-radius: 500px;
+    color: white;
+    font-family: "Anta", sans-serif;
+    width: 200px;
+
+}
+
+.btn-login:hover {
+    background-color: #5F0293;
+    color: white;
+}
+
+
+.container {
+    display: flex;
+    justify-content: center;
+}
+
+.form-control {
+    border-color: #5F0293;
+    border-left: none;
+    border-radius: 0%;
+    border-right: none;
+    border-top: none;
+}
+
+.form-group {
+    width: 390px;
+    margin: 0 auto 15px auto; 
+    color: #5F0293;
+}
+
+.login { 
+    height: 90vh;
+    margin-top: 50px;
+}
+
+.logo {
+    width: 750px;
+}
+
+.message {
+    margin-top: 5px;
+    margin-left: 30px;
+}
+
+.title {
+    font-family: "Anta", sans-serif;
+    text-align: center;
+    color: #8500CF;
+    font-size: 70px;
+}
+
