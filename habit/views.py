@@ -6,7 +6,6 @@ from .forms import HabitForm
 @login_required
 def habit_list(request):
     habits = Habit.objects.filter(user=request.user)
-    print(habits)
     return render(request, 'home.html', {'habits': habits})
 
 
