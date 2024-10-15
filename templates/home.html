@@ -4,5 +4,14 @@
 {% block content %}
 <!-- Navbar -->
 {% include 'navbar.html' %}
-
+<ul>
+    {% for habit in habits %}
+        <li>
+            {{ habit.name }} - {{ habit.frequency }}
+            <a href="{% url 'delete_habit' habit.id %}">Delete</a>
+        </li>
+    {% endfor %}
+</ul>
 {% endblock %}
+
+
