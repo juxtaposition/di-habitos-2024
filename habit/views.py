@@ -3,10 +3,12 @@ from django.contrib.auth.decorators import login_required
 from .models import Habit
 from .forms import HabitForm
 
-@login_required
 def habit_list(request):
-    habits = Habit.objects.filter(user=request.user)
-    return render(request, 'home.html', {'habits': habits})
+    if request.user.is_authenticated:
+        habits = Habit.objects.filter(user=request.user)
+        return render(request, 'home.html', {'habits': habits})
+    else:
+        return redirect('login')
 
 
 @login_required
