@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Habit
 from .forms import HabitForm
+from .models import Habit
 
 def habit_list(request):
     if request.user.is_authenticated:
@@ -9,7 +9,6 @@ def habit_list(request):
         return render(request, 'home.html', {'habits': habits})
     else:
         return redirect('login')
-
 
 @login_required
 def add_habit(request):
@@ -24,11 +23,25 @@ def add_habit(request):
         form = HabitForm()
     return render(request, 'habit/add.html', {'form': form}) # TODO: use our create view
 
-
 @login_required
 def delete_habit(request, habit_id):
     habit = get_object_or_404(Habit, id=habit_id, user=request.user)
     if request.method == 'POST':
         habit.delete()
         return redirect('habit_list')
-    return render(request, 'habit/confirm_delete.html', {'habit': habit}) # TODO: Use our delete view
+    return render(request, 'habit/add.html', {'form': form}) # TODO: use our create view
+
+# @login_required
+def dashboard_view(request):
+    steps_data = [1000, 9500, 8000, 12000, 6000]
+    water_data = [2, 2.5, 2.2, 2, 2.4, 2.3, 2]
+    avg_data = {
+        '2h': [120, 140, 160, 180, 200, 220, 240],
+        '30m': [30, 40, 50, 60, 70, 80, 90],
+        '5h': [300, 350, 400, 450, 500, 550, 600]
+    }
+    return render(request, 'dashboard.html', {
+        'steps_data': steps_data,
+        'water_data': water_data,
+        'avg_data': avg_data
+    })

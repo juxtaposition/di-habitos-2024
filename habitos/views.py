@@ -65,3 +65,20 @@ Aparatado para la vista home
 """
 def home_view(request):
     return render(request, 'home.html')
+
+"""
+Apartado para la vista dashboard
+"""
+def dashboard_view(request):
+    steps_data = [1000, 9500, 8000, 12000, 6000]
+    water_data = [2, 2.5, 2.2, 2, 2.4, 2.3, 2]
+    avg_data = {
+        '2h': [120, 140, 160, 180, 200, 220, 240],
+        '30m': [30, 40, 50, 60, 70, 80, 90],
+        '5h': [300, 350, 400, 450, 500, 550, 600]
+    }
+    return render(request, 'dashboard.html', {
+        'steps_data': steps_data,
+        'water_data': water_data,
+        'avg_data': avg_data
+    })
