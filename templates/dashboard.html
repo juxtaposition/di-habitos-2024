@@ -9,24 +9,58 @@
 <div class="container-fluid">
     <h1 class="text-center my-4">Dashboard</h1>
     <div class="row">
+        <!-- Tarjeta de Pasos -->
         <div class="col-md-4 mb-4">
-            <div class="card">
+            <div class="card shadow-sm rounded">
                 <div class="card-body">
-                    <canvas id="stepsChart" style="width: 100%; height: 300px;"></canvas>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">Pasos</h5>
+                        <span class="badge" style="background-color: #5F0293;">1000</span>
+                    </div>
+                    <canvas id="stepsChart" class="w-100" style="height: 280px;"></canvas>
                 </div>
             </div>
         </div>
+
+        <!-- Tarjeta de Tomar Agua -->
         <div class="col-md-4 mb-4">
-            <div class="card">
+            <div class="card shadow-sm rounded">
                 <div class="card-body">
-                    <canvas id="waterChart" style="width: 100%; height: 300px;"></canvas>
+                    <h5 class="card-title mb-0" style="font-family: 'Anta';">Tomar Agua</h5>
+                    <canvas id="waterChart" class="w-100" style="height: 300px;"></canvas>
+                    <div class="text-start mt-3">
+                        <p>Hoy <span class="float-end">2.0L</span></p>
+                        <hr>
+                        <p>Mejor <span class="float-end">2.5L</span></p>
+                        <hr>
+                        <p>Promedio <span class="float-end">2.2L</span></p>
+                        <hr>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Tarjeta de Promedio Diario -->
         <div class="col-md-4 mb-4">
-            <div class="card">
+            <div class="card shadow-sm rounded">
                 <div class="card-body">
-                    <canvas id="avgChart" style="width: 100%; height: 300px;"></canvas>
+                    <div style="text-align: center;">
+                        <h3 style="color: #A9A9A9;">Promedio Diario</h3>
+                        <h2>2h 20m</h2>
+                        <p style="color: #8E44AD;">+30m esta semana</p>
+                    </div>
+                    <canvas id="averageChart" class="w-100" style="height: 280px;"></canvas>
+                    <div style="display: flex; justify-content: space-around; margin-top: 10px;">
+                        <div style="color: #FF464F;">
+                            <span style="display:inline-block; width: 10px; height: 10px; background-color: #FF464F; border-radius: 50%;"></span> 2h
+                        </div>
+                        <div style="color: #1ED36F;">
+                            <span style="display:inline-block; width: 10px; height: 10px; background-color: #1ED36F; border-radius: 50%;"></span> 30m
+                        </div>
+                        <div style="color: #0061F2;">
+                            <span style="display:inline-block; width: 10px; height: 10px; background-color: #0061F2; border-radius: 50%;"></span> 5h
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -36,79 +70,184 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        var stepsData = {{ steps_data|safe }};
-        var waterData = {{ water_data|safe }};
-        var avgData = {{ avg_data|safe }};
-
+        // Gráfico de pasos
         var ctxSteps = document.getElementById('stepsChart').getContext('2d');
+        var gradientSteps = ctxSteps.createLinearGradient(0, 0, 0, 400);
+        gradientSteps.addColorStop(0, 'rgba(255, 99, 132, 1)');
+        gradientSteps.addColorStop(0.5, 'rgba(255, 99, 132, 0.5)');
+        gradientSteps.addColorStop(1, 'rgba(255, 99, 132, 0)');
+
         var stepsChart = new Chart(ctxSteps, {
             type: 'line',
             data: {
-                labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
+                labels: ['10', '11', '12', '13', '14', '15'],
                 datasets: [{
                     label: 'Pasos',
-                    data: stepsData,
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
+                    data: [1000, 8000, 9500, 7000, 6000, 7500],
+                    borderColor: '#FF464F',
+                    borderWidth: 2,
+                    fill: true,
+                    backgroundColor: gradientSteps,
+                    pointRadius: 0,
+                    pointHoverRadius: 8,
+                    pointHoverBorderColor: '#FF464F',
+                    pointHoverBackgroundColor: 'white'
                 }]
             },
             options: {
+                elements: {
+                    point: {
+                        radius: function(context) {
+                            return context.dataIndex === 2 ? 10 : 0;
+                        },
+                        backgroundColor: function(context) {
+                            return context.dataIndex === 2 ? '#FF464F' : 'rgba(255, 99, 132, 0)';
+                        },
+                        borderColor: function(context) {
+                            return context.dataIndex === 2 ? '#FFFFFF' : '#FF464F';
+                        },
+                        borderWidth: 5,
+                    },
+                    line: {
+                        tension: 0.5
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return 'Pasos: ' + tooltipItem.raw;
+                            }
+                        }
+                    }
+                },
                 scales: {
+                    x: {
+                        grid: {
+                            borderDash: [5, 5],
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        ticks: {
+                            font: {
+                                family: 'Anta',
+                                size: 12
+                            }
+                        }
+                    },
                     y: {
-                        beginAtZero: true
+                        display: false
                     }
                 }
             }
         });
 
+        // Gráfico de tomar agua
         var ctxWater = document.getElementById('waterChart').getContext('2d');
         var waterChart = new Chart(ctxWater, {
             type: 'bar',
             data: {
-                labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
+                labels: ['L', 'M', 'M', 'J', 'V', 'S', 'D'],
                 datasets: [{
-                    label: 'Agua (litros)',
-                    data: waterData,
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
+                    label: 'Litros de Agua',
+                    data: [2.0, 2.1, 2.3, 2.0, 2.4, 2.5, 2.2],
+                    backgroundColor: '#FF464F',
+                    borderWidth: 1,
+                    borderRadius: 10,
+                    borderSkipped: false,
+                    barThickness: 20
                 }]
             },
             options: {
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
                 scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#A9A9A9',
+                            font: {
+                                size: 14,
+                                family: 'Anta'
+                            }
+                        }
+                    },
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        max: 3,
+                        ticks: {
+                            display: false
+                        },
+                        grid: {
+                            color: '#E0E0E0',
+                            borderDash: [5, 5],
+                            drawBorder: false
+                        }
                     }
                 }
             }
         });
 
-        var ctxAvg = document.getElementById('avgChart').getContext('2d');
-        var avgChart = new Chart(ctxAvg, {
-            type: 'line',
+        // Gráfico de promedio diario
+        var ctxAverage = document.getElementById('averageChart').getContext('2d');
+        var averageChart = new Chart(ctxAverage, {
+            type: 'bar',
             data: {
-                labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
-                datasets: [{
-                    label: 'Promedio 2h',
-                    data: avgData['2h'],
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
-                }, {
-                    label: 'Promedio 30m',
-                    data: avgData['30m'],
-                    borderColor: 'rgba(255, 206, 86, 1)',
-                    borderWidth: 1
-                }, {
-                    label: 'Promedio 5h',
-                    data: avgData['5h'],
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
+                labels: ['L', 'M', 'M', 'J', 'V', 'S', 'D'],
+                datasets: [
+                    {
+                        label: '5h',
+                        data: [1, 1, 2, 2, 3, 3, 3],
+                        backgroundColor: '#0061F2',
+                        borderWidth: 1,
+                        borderRadius: 3
+                    },
+                    {
+                        label: '30m',
+                        data: [0.5, 0.3, 0.4, 0.6, 0.4, 0.6, 1.5],
+                        backgroundColor: '#1ED36F',
+                        borderWidth: 1,
+                        borderRadius: 3
+                    },
+                    {
+                        label: '2h',
+                        data: [1, 1.5, 1, 2, 2, 2.5, 2.2],
+                        backgroundColor: '#FF464F',
+                        borderWidth: 1,
+                        borderRadius: 3
+                    }
+                ]
             },
             options: {
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
                 scales: {
+                    x: {
+                        stacked: true,
+                        grid: {
+                            display: false
+                        }
+                    },
                     y: {
-                        beginAtZero: true
+                        stacked: true,
+                        grid: {
+                            color: '#E0E0E0',
+                            borderDash: [5, 5],
+                            drawBorder: false
+                        },
+                        ticks: {
+                            display: false
+                        }
                     }
                 }
             }
