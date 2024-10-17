@@ -6,4 +6,3 @@ urlpatterns = [
     path('habit/add/', add_habit, name='add_habit'),
     path('habit/delete/<int:habit_id>/', delete_habit, name='delete_habit'),
 ]
-
