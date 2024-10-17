@@ -16,7 +16,7 @@ def login_view(request):
     if request.method == 'POST':
         form = CustomAuthenticationForm(data=request.POST)
         if form.is_valid():
-            return redirect('home')
+            return redirect('habit_list')
     else:
         form = CustomAuthenticationForm()
     return render(request, 'login.html', {'form': form})
