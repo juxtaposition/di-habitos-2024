@@ -43,7 +43,14 @@
                         <a href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Eliminar hábito" class="icon-option"><i class="ph ph-trash"></i></a>
                     </div>
                 </div>
-                <p>{{ habit.frequency }}</p>
+                <div class="row">
+                    <div class="col-md">
+                        <p>{{ habit.frequency }}</p>
+                    </div>
+                    <div class="col-md" style="text-align: end;">
+                        <p>{{ habit.category.name }}</p>    
+                    </div>
+                </div>
             </div>
         {% endfor %}
     </div>
@@ -54,7 +61,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 class="modal-title" style="color: #5F0293;" id="habitModalLabel">Hábito</h3>
+                    <h3 class="modal-title" style="color: #5F0293; font-family: Anta, sans-serif;" id="habitModalLabel">Hábito</h3>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="modalBody"></div>
