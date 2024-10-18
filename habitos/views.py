@@ -1,8 +1,10 @@
 from django import forms
 from django.contrib.auth import login, logout as auth_logout
+from django.contrib.auth import login, logout as auth_logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
+
 
 
 """
@@ -16,6 +18,8 @@ def login_view(request):
     if request.method == 'POST':
         form = CustomAuthenticationForm(data=request.POST)
         if form.is_valid():
+            user = form.get_user()
+            login(request, user)
             user = form.get_user()
             login(request, user)
             return redirect('habit_list')
@@ -65,9 +69,3 @@ def register_view(request):
 def logout(request):
     auth_logout(request)
     return redirect('login')
-
-"""
-Aparatado para la vista home
-"""
-def home_view(request):
-    return render(request, 'home.html')

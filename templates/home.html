@@ -4,15 +4,118 @@
 {% block content %}
 <!-- Navbar -->
 {% include 'navbar.html' %}
-<ul>
-    {% for habit in habits %}
+
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<link rel="stylesheet" href="{% static 'css/auth_base.css' %}">
+
+<div class="body-content">
+
+    <div class="row">
+
+        <div class="col-md-10">
+            <h1 class="welcome">¡ Bienvenido {{ username }} !</h1>
+        </div>
+        
+        <div class="col-md">
+            <button class="btn btn-style" data-bs-toggle="modal" data-bs-target="#habitModal" data-action="add">
+                <i class="ph ph-plus"></i>Nuevo hábito
+            </button>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="row">
+        <h3 class="mis-habitos">Mis hábitos</h3>
+    </div>
+
+    <br>
+
+    <div class="habits-container">
+        {% for habit in habits %}
+            <div class="habit-item">
+                <div class="row">
+                    <div class="col-md-10">
+                        <h3>{{ habit.name }}</h3>
+                    </div>
+                    <div class="col-md">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#habitModal" data-action="edit" data-habit-id="{{ habit.id }}" title="Editar hábito" class="icon-option"><i class="ph ph-pencil-simple-line"></i></a>
+                        <a href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Eliminar hábito" class="icon-option"><i class="ph ph-trash"></i></a>
+                    </div>
+                </div>
+                <p>{{ habit.frequency }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="habitModal" tabindex="-1" aria-labelledby="habitModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" style="color: #5F0293;" id="habitModalLabel">Hábito</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalBody"></div>
+            </div>
+        </div>
+    </div>
     
-        <li>
-            {{ habit.name }} - {{ habit.frequency }}
-            <a href="{% url 'delete_habit' habit.id %}">Delete</a>
-        </li>
-    {% endfor %}
-</ul>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('habitModal');
+        const modalBody = document.getElementById('modalBody');
+    
+        modal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const action = button.getAttribute('data-action');
+            const habitId = button.getAttribute('data-habit-id');
+            
+            let url = action === 'add' ? "{% url 'add_habit' %}" : `/habit/edit/${habitId}/`;
+            
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                modalBody.innerHTML = data.html;
+                setupForm(url);
+            });
+    
+            modal.querySelector('.modal-title').textContent = action === 'add' ? 'Nuevo Hábito' : 'Editar Hábito';
+        });
+    
+        function setupForm(url) {
+            const form = modalBody.querySelector('form');
+            form.action = url;
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        modalBody.innerHTML = data.html;
+                        setupForm(url);
+                    }
+                });
+            });
+        }
+    });
+</script>
+
 {% endblock %}
 
 
