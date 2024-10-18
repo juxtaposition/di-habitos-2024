@@ -36,7 +36,7 @@
             <div class="habit-item">
                 <div class="row">
                     <div class="col-md-10">
-                        <h3>{{ habit.name }}</h3>
+                        <h5>{{ habit.name }}</h5>
                     </div>
                     <div class="col-md">
                         <a href="#" data-bs-toggle="modal" data-bs-target="#habitModal" data-action="edit" data-habit-id="{{ habit.id }}" title="Editar hábito" class="icon-option">
@@ -146,13 +146,25 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         var deleteHabitModal = document.getElementById('deleteHabit');
-        
+
         deleteHabitModal.addEventListener('show.bs.modal', function (event) {
             var button = event.relatedTarget;
             var habitId = button.getAttribute('data-habit-id'); 
             
             var form = document.getElementById('deleteHabitForm');
             form.action = '/habit/delete/' + habitId + '/'; 
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var deleteHabitModal = new bootstrap.Modal(document.getElementById('deleteHabit'), {
+            backdrop: 'static',
+            keyboard: false      
+        });
+
+        var habitModal = new bootstrap.Modal(document.getElementById('habitModal'), {
+            backdrop: 'static',
+            keyboard: false      
         });
     });
 
