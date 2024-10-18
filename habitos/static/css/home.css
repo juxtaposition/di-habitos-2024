@@ -1,14 +1,18 @@
 
+.btn-cancel:hover {
+    background-color: #ab2532 !important;
+}
+
 .btn-container {
     display: flex;
     justify-content: center;
-    margin-top: 20px;
 }
 
 .btn-style {
     width: 150px !important;
     text-align: center;
 }
+
 
 .form-control-modal {
     border-color: black !important;
@@ -58,6 +62,17 @@
     color: #5F0293;
     font-family: "Anta", sans-serif;
     text-align: center;
+}
+
+.modal-body.delete {
+    font-family: "Anta", sans-serif;
+    text-align: center;
+}
+
+.modal-header.titulo {
+    color: #5F0293;
+    justify-content: center;
+    font-family: "Anta", sans-serif;
 }
 
 .ph-plus{

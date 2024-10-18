@@ -39,8 +39,13 @@
                         <h3>{{ habit.name }}</h3>
                     </div>
                     <div class="col-md">
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#habitModal" data-action="edit" data-habit-id="{{ habit.id }}" title="Editar hábito" class="icon-option"><i class="ph ph-pencil-simple-line"></i></a>
-                        <a href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Eliminar hábito" class="icon-option"><i class="ph ph-trash"></i></a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#habitModal" data-action="edit" data-habit-id="{{ habit.id }}" title="Editar hábito" class="icon-option">
+                            <i class="ph ph-pencil-simple-line"></i>
+                        </a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteHabit" data-habit-id="{{ habit.id }}" title="Eliminar hábito" class="icon-option">
+                            <i class="ph ph-trash"></i>
+                        </a>
+                        
                     </div>
                 </div>
                 <div class="row">
@@ -56,16 +61,33 @@
     </div>
 
 
-    <!-- Modal -->
+    <!-- Modal Create and Edit Habits-->
     <div class="modal fade" id="habitModal" tabindex="-1" aria-labelledby="habitModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title" style="color: #5F0293; font-family: Anta, sans-serif;" id="habitModalLabel">Hábito</h3>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header titulo">
+                    <h3 class="modal-title titulo" id="habitModalLabel">Hábito</h3>
                 </div>
                 <div class="modal-body" id="modalBody"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal Delete Habit-->
+    <div class="modal fade" id="deleteHabit" tabindex="-1" role="dialog" aria-labelledby="deleteHabitLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <h4 class="modal-body delete">
+            ¿Estás seguro que deseas eliminar este hábito?
+            </h4>
+            <div class="modal-footer">
+                <form method="POST" id="deleteHabitForm" action="">
+                    {% csrf_token %}
+                    <button type="button" class="btn btn-style btn-cancel" style="background-color: #dc3545" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-style">Eliminar</button>
+                </form>
+            </div>
+        </div>
         </div>
     </div>
     
@@ -121,6 +143,19 @@
             });
         }
     });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var deleteHabitModal = document.getElementById('deleteHabit');
+        
+        deleteHabitModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var habitId = button.getAttribute('data-habit-id'); 
+            
+            var form = document.getElementById('deleteHabitForm');
+            form.action = '/habit/delete/' + habitId + '/'; 
+        });
+    });
+
 </script>
 
 {% endblock %}
