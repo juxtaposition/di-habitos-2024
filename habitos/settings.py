@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'habitos',
     'django_bootstrap5',
-    'habit'
+    'habit',
 ]
 
 MIDDLEWARE = [

@@ -4,11 +4,11 @@ from django.contrib.auth.models import User
 class Category(models.Model):
 
     CATEGORY_NAME = (
-        ('hogar',   'hogar'),
-        ('escuela', 'escuela'),
-        ('trabajo', 'trabajo'),
-        ('metas',   'metas'),
-        ('otros',   'otros')
+        ('Hogar',   'Hogar'),
+        ('Escuela', 'Escuela'),
+        ('Trabajo', 'Trabajo'),
+        ('Metas',   'Metas'),
+        ('Otros',   'Otros')
         )
 
     name        = models.CharField(max_length=100, choices=CATEGORY_NAME, default='hogar')
@@ -20,9 +20,9 @@ class Category(models.Model):
 class Habit(models.Model):
 
     FREQUENCY = (
-        ('diario',  'diario'),
-        ('semanal', 'semanal'),
-        ('mensual', 'mensual')
+        ('Diario', 'Diario'),
+        ('Semanal', 'Semanal'),
+        ('Mensual', 'Mensual')
         )
 
     user         = models.ForeignKey(User, on_delete=models.CASCADE)

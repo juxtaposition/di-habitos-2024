@@ -1,3 +1,5 @@
+from django.http import JsonResponse
+from django.template.loader import render_to_string
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -22,10 +24,27 @@ def add_habit(request):
             habit.user = request.user
             habit.category_id = form.data.get('category')
             habit.save()
-            return redirect('habit_list')
+            return JsonResponse({'success': True})
     else:
         form = HabitForm()
-    return render(request, 'habit/add.html', {'form': form }) # TODO: use our create view
+    
+    html = render_to_string('habit/habit_form_modal.html', {'form': form}, request=request)
+    return JsonResponse({'html': html})
+
+
+@login_required
+def edit_habit(request, habit_id):
+    habit = get_object_or_404(Habit, id=habit_id, user=request.user)
+    if request.method == 'POST':
+        form = HabitForm(request.POST, instance=habit)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True})
+    else:
+        form = HabitForm(instance=habit)
+    
+    html = render_to_string('habit/habit_form_modal.html', {'form': form}, request=request)
+    return JsonResponse({'html': html})
 
 
 @login_required

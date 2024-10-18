@@ -1,8 +1,10 @@
 from django import forms
 from django.contrib.auth import login, logout as auth_logout
+from django.contrib.auth import login, logout as auth_logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
+
 
 
 """
@@ -22,8 +24,6 @@ def login_view(request):
     else:
         form = CustomAuthenticationForm()
     return render(request, 'login.html', {'form': form})
-
-
 
 """
 Apartado para la vista register
@@ -65,9 +65,3 @@ def register_view(request):
 def logout(request):
     auth_logout(request)
     return redirect('login')
-
-"""
-Aparatado para la vista home
-"""
-def home_view(request):
-    return render(request, 'home.html')
