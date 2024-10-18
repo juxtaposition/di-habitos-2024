@@ -6,7 +6,9 @@
 {% include 'navbar.html' %}
 <ul>
     {% for habit in habits %}
-    
+        <!-- Just for dev delete please Zuriel -->
+        {{ habit.category.name }}
+        {{ habit.category.color }}
         <li>
             {{ habit.name }} - {{ habit.frequency }}
             <a href="{% url 'delete_habit' habit.id %}">Delete</a>
