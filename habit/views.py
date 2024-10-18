@@ -8,7 +8,6 @@ from .forms import HabitForm
 
 def habit_list(request):
     if request.user.is_authenticated:
-        print(request.user.id)
         habits = Habit.objects.filter(user=request.user)
         userQuery = User.objects.get(pk=request.user.id)
         return render(request, 'home.html', {'habits': habits, 'username': userQuery.first_name})
