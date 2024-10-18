@@ -20,14 +20,10 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            user = form.get_user()
-            login(request, user)
             return redirect('habit_list')
     else:
         form = CustomAuthenticationForm()
     return render(request, 'login.html', {'form': form})
-
-
 
 """
 Apartado para la vista register

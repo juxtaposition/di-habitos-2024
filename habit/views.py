@@ -12,8 +12,6 @@ def habit_list(request):
         habits = Habit.objects.filter(user=request.user)
         userQuery = User.objects.get(pk=request.user.id)
         return render(request, 'home.html', {'habits': habits, 'username': userQuery.first_name})
-        userQuery = User.objects.get(pk=request.user.id)
-        return render(request, 'home.html', {'habits': habits, 'username': userQuery.first_name})
     else:
         return redirect('login')
 
