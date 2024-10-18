@@ -31,6 +31,8 @@
         {{ form.password.label_tag }}
         <input type="password" name="{{ form.password.name }}" class="form-control" id="{{ form.password.id_for_label }}">
     </div>
+    <div class="container">
+        <button type="submit" class="btn btn-style">Registrarse</button>
+    </div>
 {% endblock %}
 
-{% block submit_button %}Registrarse{% endblock %}

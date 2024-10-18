@@ -5,24 +5,23 @@
         <img src="{% static 'img/logoNavbar.png'%}" width="250" height="70" alt="logoNavbar">
     </a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-
     <div class="collapse navbar-collapse" id="navbarContent">
-        <!-- Aquí puedes agregar otros enlaces de navegación si es necesario -->
-
-        <!-- Alineamos el contenido a la derecha usando ml-auto (Bootstrap 4) o ms-auto (Bootstrap 5) -->
-        <ul class="navbar-nav ms-auto">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <!-- Imagen de perfil del usuario -->
-                    <img src="{% static 'img/user3.png' %}" width="70" height="70" class="rounded-circle" alt="User Profile">
+        <ul class="navbar-nav ms-auto align-items-center">
+            <li class="nav-item">
+                <a class="nav-link" href="">Inicio</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="">Estadísticas</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Notificaciones"><i class="ph ph-bell"></i></a>
+            </li>
+            <li class="nav-item dropdown profile">
+                <a class="" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="{% static 'img/user.png' %}" width="50" height="50" class="rounded-circle" alt="User Profile">
                 </a>
-                <!-- Menú desplegable (dropdown) -->
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                    <li><a class="dropdown-item" href="">Ver perfil</a></li>
-                    <li><a class="dropdown-item" href="{% url 'login' %}">Cerrar sesión</a></li>
+                <ul class="dropdown-menu dropdown-menu-end menu" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item item" href="{% url 'logout' %}">Cerrar Sesión <i class="ph ph-sign-out logout-icon"></i></a></li>
                 </ul>
             </li>
         </ul>
