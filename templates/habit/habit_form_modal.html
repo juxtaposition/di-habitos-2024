@@ -1,8 +1,8 @@
 <form method="POST" action="">
     {% csrf_token %}
     {% for field in form %}
-        <div class="mb-3 row">
-            <label for="{{ field.id_for_label }}" class="form-label" style="color: #5F0293;">{{ field.label }}</label>
+        <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label form-control-modal" style="color: #5F0293;">{{ field.label }}</label>
             {{ field }}
             {% if field.errors %}
                 <div class="invalid-feedback">
@@ -12,6 +12,7 @@
         </div>
     {% endfor %}
     <div class="btn-container">
-        <button type="submit" class="btn btn-style">Guardar hábito</button>
+        <button type="button" class="btn btn-style btn-cancel m-2" style="background-color: #dc3545" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-style m-2">Guardar hábito</button>
     </div>
 </form>
