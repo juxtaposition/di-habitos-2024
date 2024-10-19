@@ -23,6 +23,7 @@ urlpatterns = [
     path('', include("habit.urls")),
     path('admin/', admin.site.urls),
     path('login/', views.login_view, name='login'),
+    path('logout/', views.logout, name='logout'),
     path('register/', views.register_view, name='register'),
     path('dashboard/', dashboard_view, name='dashboard'),
     # path('accounts/login/', views.login_view, name='account_login')

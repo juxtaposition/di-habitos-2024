@@ -1,6 +1,58 @@
 
-.navDaily { 
+.logout-icon {
+    margin-left: 10px;
+}
 
-    background: linear-gradient(to bottom, #5F0293, #ffffff); 
-    height: 120px;
+.navbar-brand{
+    margin-left: 20px;
+}
+
+.navDaily { 
+    background: linear-gradient(to bottom, #5F0293, white); 
+    height: 100px;
+}
+
+.navbar-nav .dropdown-menu.menu {
+    background-color: #5F0293; 
+    border: 1px solid #000000; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.navbar-nav .dropdown-menu.menu .dropdown-item.item {
+    color: white; 
+}
+
+.navbar-nav .dropdown-menu.menu .dropdown-item.item:hover {
+    background-color: #8500CF; 
+}
+
+.nav-link {
+    color: white !important;
+    font-size: 1rem !important;
+    margin: 20px; 
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.nav-link:hover {
+    transform: translateY(-5px);
+}
+
+.ph-bell {
+    font-size: 1.3rem; 
+    transition: transform 0.3s ease;
+}
+
+.ph-bell:hover {
+    transform: translateY(-5px);
+}
+
+.profile {
+    margin-right: 40px;
+    margin-left: 30px;
+    transition: transform 0.3s ease;
+}
+
+.profile:hover {
+    transform: translateY(-5px);
 }

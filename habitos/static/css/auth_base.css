@@ -20,7 +20,7 @@ label {
     justify-content: center;
 }
 
-.btn-login {
+.btn-style {
     background-color: #8500CF;
     border-radius: 500px;
     color: white;
@@ -29,7 +29,7 @@ label {
 
 }
 
-.btn-login:hover {
+.btn-style:hover {
     background-color: #5F0293;
     color: white;
 }
@@ -47,6 +47,7 @@ label {
     border-right: none;
     border-top: none;
 }
+
 
 .form-group {
     width: 390px;
