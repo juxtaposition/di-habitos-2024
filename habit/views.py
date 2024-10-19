@@ -3,7 +3,7 @@ from django.template.loader import render_to_string
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .models import Habit, Category
+from .models import Habit
 from .forms import HabitForm
 
 def habit_list(request):
@@ -22,7 +22,7 @@ def add_habit(request):
         if form.is_valid():
             habit = form.save(commit=False)
             habit.user = request.user
-            habit.category_id = form.data.get('category')
+            habit.category = form.data.get('category')
             habit.save()
             return JsonResponse({'success': True})
     else:
