@@ -8,54 +8,47 @@ from django.db.models import Sum, Count, Q
 import json
 from datetime import datetime
 from collections import Counter
+from django.http import JsonResponse
+
 
 @login_required
 def estadisticas(request):
 
-    usuario = request.user
-
-    fecha_inicio   = request.GET.get('fecha_inicio')
-    fecha_fin      = request.GET.get('fecha_fin')
-    category_id    = request.GET.get('categoria')
+    usuario        = request.user
+    start_date     = request.GET.get('start_date')
+    end_date       = request.GET.get('end_date')
+    category_id    = request.GET.get('category')
+    frequency      = request.GET.get('frequency')
     categories     = Category.objects.all()
+    habits         = Habit.objects.all()
     category_names = []
+    freq_names     = []
 
     if not (category_id is None):
-        habits = Habit.objects.all().filter(user_id=usuario, category_id=category_id)
-    else:
-        habits = Habit.objects.all().filter(user_id=usuario)
+        habits = habits.filter(user_id=usuario, category_id=category_id)
+    
+    if not (frequency is None):
+        habits = habits.filter(user_id=usuario, frequency=frequency)
 
-    if fecha_inicio and fecha_fin:
-        habits = habits.filter(created_at__range=[parse_date(fecha_inicio), parse_date(fecha_fin)])
+    if (frequency is None) and (frequency is None):
+        habits = habits.filter(user_id=usuario)
 
-    # this is better way to get the all categories by count
+    if start_date and end_date:
+        habits = habits.filter(created_at__range=[parse_date(start_date), parse_date(end_date)])
+ 
     for h in habits:
         category_names.append(h.category.name)
     
-    allCategories = dict(Counter(category_names))
+    for f in habits:
+        freq_names.append(f.frequency)
 
+    allCategories  = dict(Counter(category_names)) # [{"category": count}]
+    allFrequencies = dict(Counter(freq_names))
 
-    print(allCategories)
-    # if categorias:
-    #     compras = compras.filter(fruta__categorias__id__in=categorias).distinct()
+    print(allFrequencies, frequency, category_id)
 
-    # frutas_compradas = compras.values('fruta__nombre').annotate(total_compradas=Sum('cantidad')).order_by('-total_compradas')
-
-    # total_compras = compras.aggregate(total=Sum('cantidad'))['total'] or 0
-    # if total_compras > 0:
-    #     for fruta in frutas_compradas:
-    #         fruta['porcentaje'] = (fruta['total_compradas'] / total_compras) * 100
-    # else:
-    #     for fruta in frutas_compradas:
-    #         fruta['porcentaje'] = 0
-    
-    # todas_categorias = Categoria.objects.all()
-
-    # contexto = {
-    #     'frutas_compradas': json.dumps(list(frutas_compradas)),
-    #     'todas_categorias': todas_categorias,
-    # }
-    return render(request, 'stats/index.html', { 
-        'habits': json.dumps(allCategories),
-         "categories": categories
+    return render(request, 'stats/index.html', {
+         'byCategory': json.dumps(allCategories),
+         'byFrequency': json.dumps(allFrequencies),
+         'categories': categories
         })

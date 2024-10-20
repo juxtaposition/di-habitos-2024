@@ -9,17 +9,18 @@
     <!-- Formulario para filtrar por fecha y categoría -->
     <form method="GET" class="row mb-4">
         <div class="col-md-4">
-            <label for="fecha_inicio">Fecha Inicio:</label>
-            <input type="date" name="fecha_inicio" class="form-control" id="fecha_inicio">
+            <label for="start_date">Fecha Inicio:</label>
+            <input type="date" name="start_date" class="form-control" id="start_date">
         </div>
         <div class="col-md-4">
-            <label for="fecha_fin">Fecha Fin:</label>
-            <input type="date" name="fecha_fin" class="form-control" id="fecha_fin">
+            <label for="end_date">Fecha Fin:</label>
+            <input type="date" name="end_date" class="form-control" id="end_date">
         </div>
         <div class="col-md-4">
             <label for="categorias">Categorías:</label>
             <select name="categoria" class="form-control" id="categoria">
                 <!-- Mostrar dinámicamente las categorías -->
+                <option value="">Selecciona</option>
                 {% for c in categories %}
                 <option value="{{ c.id }}">{{ c.name }}</option>
                 {% endfor %}
@@ -32,10 +33,10 @@
     
 
     <div style="width: 300px; height: 300px">
-    <canvas id="totalCategorias" width="400" height="200"></canvas>
+    <canvas id="byCategory" width="400" height="200"></canvas>
     </div>
     <div style="width: 300px; height: 300px"> 
-    <canvas id="totalByDate" width="400" height="200"></canvas>
+    <canvas id="byFrequency" width="400" height="200"></canvas>
     </div>
     <div style="width: 300px; height: 300px"> 
     <canvas id="points" width="400" height="200"></canvas>
@@ -45,21 +46,27 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    const categoriesAll      = {{ habits |safe}}
-    const categoriesName     = Object.keys(categoriesAll);
-    const total              = Object.values(categoriesAll);
-    const totalSum           = total.reduce((a, b) => a+b)
-    const ctxTotalCategorias = document.getElementById('totalCategorias').getContext('2d');
-    const ctxTotalByDate     = document.getElementById('totalByDate').getContext('2d');
+    const bgcolors             = ['#FF5733', '#C70039', '#C70039', ' #581845', '#FFC300']
+    const categories         = {{ byCategory |safe}}
+    const categoriesName     = Object.keys(categories);
+    const categoriesValue    = Object.values(categories);
+
+    const frequencies         = {{ byFrequency |safe}}
+    const frequenciesName     = Object.keys(frequencies);
+    const frequenciesValue    = Object.values(frequencies);
+
+    const totalSum           = categoriesValue.reduce((a, b) => a+b)
+    const ctxByCategory      = document.getElementById('byCategory').getContext('2d');
+    const ctxByFrequency     = document.getElementById('byFrequency').getContext('2d');
     const ctxPoints          = document.getElementById('points').getContext('2d');
 
-    new Chart(ctxTotalCategorias, {
+    new Chart(ctxByCategory, {
         type: 'doughnut',
         data: {
             labels: categoriesName,
             datasets: [{
-                data: total,
-                backgroundColor: ['#FF5733', '#C70039', '#C70039', ' #581845', '#FFC300'],
+                data: categoriesValue,
+                backgroundColor: bgcolors,
                 borderColor: ' #DAF7A6',
                 borderWidth: 1
             }]
@@ -82,14 +89,14 @@
         }
     });
 
-    new Chart(ctxTotalByDate, {
+    new Chart(ctxByFrequency, {
         type: 'bar',
         data: {
-            labels: categoriesName,
+            labels: frequenciesName,
             datasets: [{
-                label: "Habitos",
-                data: total,
-                backgroundColor: ['#FF5733', '#C70039', '#C70039', ' #581845', '#FFC300'],
+                label: "Frecuencias",
+                data: frequenciesValue,
+                backgroundColor: bgcolors,
                 borderColor: '#DAF7A6',
                 borderWidth: 1
             }]
@@ -103,7 +110,7 @@
             plugins: {
                 title: {
                     display: true,
-                    text: 'Categorias más creadas'
+                    text: 'Frecuencias más usadas'
                   },
                 tooltip: {
                     callbacks: {
@@ -116,22 +123,31 @@
         }
     });
 
+    /* Esto es un ejemplo que seria bueno crear con fechas del los habitos */
     new Chart(ctxPoints, {
         type: 'line',
         data: {
-            labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6'],
+            labels: [],
             datasets: [
               {
-                label: 'Dataset',
-                data: [0, 10, -10, 4, 4, 50],
+                label: 'history',
+                data: [
+                { x: '2024-10-01', y: 10 },
+                { x: '2024-10-02', y: 15 },
+                { x: '2024-10-03', y: 20 },
+                { x: '2024-10-04', y: 25 },
+                { x: '2024-10-05', y: 30 },
+                { x: '2024-10-06', y: 28 },
+                { x: '2024-10-07', y: 350 },
+            ],
                 borderColor:'#DAF7A6',
-                backgroundColor: ['#FF5733', '#C70039', '#C70039', ' #581845', '#FFC300'],
+                backgroundColor: bgcolors,
                 pointStyle: 'circle',
                 pointRadius: 10,
                 pointHoverRadius: 15
               }
-            ]
-          },
+            ],
+        },
         options: {
           responsive: true,
           plugins: {
@@ -141,8 +157,7 @@
             }
           }
         }
-      });
-
+    });
 </script>
 
 {% endblock %}
