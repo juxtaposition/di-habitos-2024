@@ -45,8 +45,6 @@ def estadisticas(request):
     allCategories  = dict(Counter(category_names)) # [{"category": count}]
     allFrequencies = dict(Counter(freq_names))
 
-    print(allFrequencies, frequency, category_id)
-
     return render(request, 'stats/index.html', {
          'byCategory': json.dumps(allCategories),
          'byFrequency': json.dumps(allFrequencies),
