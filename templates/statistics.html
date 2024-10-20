@@ -8,6 +8,35 @@
 
 <div class="container-fluid">
     <h1 class="text-center my-4">Estadísticas</h1>
+
+    <!-- Formulario de filtrado -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row">
+                <div class="col-md-4">
+                    <label for="fecha_inicio">Fecha Inicio:</label>
+                    <input type="date" name="fecha_inicio" class="form-control" id="fecha_inicio">
+                </div>
+                <div class="col-md-4">
+                    <label for="fecha_fin">Fecha Fin:</label>
+                    <input type="date" name="fecha_fin" class="form-control" id="fecha_fin">
+                </div>
+                <div class="col-md-4">
+                    <label for="categorias">Categorías:</label>
+                    <select name="categorias" class="form-control" id="categorias" multiple>
+                        <!-- Ejemplo de categorías dinámicas -->
+                        {% for categoria in todas_categorias %}
+                        <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-12 mt-3 text-center">
+                    <button type="submit" class="btn" style="background-color: #5F0293; color: white;">Aplicar Filtros</button>
+                </div>
+                
+            </form>
+        </div>
+    </div>
     <div class="row">
         <!-- Tarjeta de Pasos -->
         <div class="col-md-4 mb-4">
@@ -67,22 +96,61 @@
             </div>
         </div>
     </div>
+
+    <!-- Nueva Tarjeta con Código Sugerido -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 text-center">
+                    <div class="w-25 mx-auto"> dddd
+                        <canvas id="grafico1"></canvas>
+                    </div>
+                    <p>1,235</p>
+                    <p>################</p>
+                </div>
+                <div class="col-md-6 text-center">
+                    <div class="w-25 mx-auto"> ffff
+                        <canvas id="grafico2"></canvas>
+                    </div>
+                    <p>456</p>
+                    <p>@@@@@@@@@@@@</p>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-6 text-center">
+                    <div class="w-25 mx-auto"> yyyy
+                        <canvas id="grafico3"></canvas>
+                    </div>
+                    <p>1,235 <span style="color: purple;">↓</span></p>
+                    <p>$$$$$$$$$$$$</p>
+                </div>
+                <div class="col-md-6 text-center">
+                    <div class="w-25 mx-auto"> uuuu
+                        <canvas id="grafico4"></canvas>
+                    </div>
+                    <p>456 <span style="color: yellow;">↑</span></p>
+                    <p>%%%%%%%%%%%%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Gráfico de pasos
         var ctxSteps = document.getElementById('stepsChart').getContext('2d');
         var gradientSteps = ctxSteps.createLinearGradient(0, 0, 0, 400);
-        gradientSteps.addColorStop(0, 'rgba(255, 99, 132, 1)');    // Rojo sólido al inicio
+        gradientSteps.addColorStop(0, 'rgba(255, 99, 132, 1)');   
         gradientSteps.addColorStop(0.1, 'rgba(255, 99, 132, 0.9)');
         gradientSteps.addColorStop(0.2, 'rgba(255, 99, 132, 0.7)');
         gradientSteps.addColorStop(0.3, 'rgba(255, 99, 132, 0.5)');
-        gradientSteps.addColorStop(0.5, 'rgba(255, 99, 132, 0.3)'); // Rojo más suave
+        gradientSteps.addColorStop(0.5, 'rgba(255, 99, 132, 0.3)'); 
         gradientSteps.addColorStop(0.7, 'rgba(255, 99, 132, 0.2)');
         gradientSteps.addColorStop(0.9, 'rgba(255, 99, 132, 0.1)');
-        gradientSteps.addColorStop(1, 'rgba(255, 99, 132, 0)');    // Transparente al final
+        gradientSteps.addColorStop(1, 'rgba(255, 99, 132, 0)');
 
 
         var stepsChart = new Chart(ctxSteps, {
@@ -280,6 +348,93 @@
                             display: false
                         }
                     }
+                }
+            }
+        });
+
+        // Nuevos Gráficos
+        const ctx1 = document.getElementById('grafico1').getContext('2d');
+        const grafico1 = new Chart(ctx1, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [70, 30],
+                    backgroundColor: ['#800080', '#EEEEEE']
+                }]
+            },
+            options: {
+                cutout: '70%',
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        const ctx2 = document.getElementById('grafico2').getContext('2d');
+        const grafico2 = new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [50, 50],
+                    backgroundColor: ['#FFCC00', '#EEEEEE']
+                }]
+            },
+            options: {
+                cutout: '70%',
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        const ctx3 = document.getElementById('grafico3').getContext('2d');
+        const grafico3 = new Chart(ctx3, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    data: [10, 20, 15, 25, 30, 40],
+                    borderColor: '#800080',
+                    tension: 0.4,
+                    fill: false,
+                    pointRadius: 0,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { display: false },
+                    y: { display: false }
+                }
+            }
+        });
+
+        const ctx4 = document.getElementById('grafico4').getContext('2d');
+        const grafico4 = new Chart(ctx4, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    data: [20, 30, 25, 35, 40, 45],
+                    borderColor: '#FFCC00',
+                    tension: 0.4,
+                    fill: false,
+                    pointRadius: 0,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { display: false },
+                    y: { display: false }
                 }
             }
         });
