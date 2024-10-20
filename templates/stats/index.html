@@ -4,7 +4,7 @@
 {% block content %}
 {% include 'navbar.html' %}
 <div class="container mt-5">
-    <h2 class="text-center">Estadísticas de Frutas Más Compradas</h2>
+    <h2 class="text-center">Estadísticas</h2>
 
     <!-- Formulario para filtrar por fecha y categoría -->
     <form method="GET" class="row mb-4">
@@ -20,7 +20,7 @@
             <label for="categorias">Categorías:</label>
             <select name="categorias" class="form-control" id="categorias" multiple>
                 <!-- Mostrar dinámicamente las categorías -->
-                {% for categoria in todas_categorias %}
+                {% for habits in todas_categorias %}
                 <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
                 {% endfor %}
             </select>
@@ -31,44 +31,80 @@
     </form>
     
 
-    <!-- Contenedor del gráfico -->
-    <canvas id="graficoFrutasCompradas" width="400" height="200"></canvas>
+    <canvas id="totalCategorias" width="400" height="200"></canvas>
+    <canvas id="totalByDate" width="400" height="200"></canvas>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    const frutasCompradas = {{ frutas_compradas|safe }};
+    const categorias = Object.keys({{ habits|safe }});
+    const total      = Object.values({{ habits|safe }});
+    const totalSum   = total.reduce((a, b) => a+b)
+    const ctxTotalCategorias        = document.getElementById('totalCategorias').getContext('2d');
+    const ctxTotalByDate       = document.getElementById('totalByDate').getContext('2d');
 
-    const nombresFrutas = frutasCompradas.map(f => f.fruta__nombre);
-    const cantidadesFrutas = frutasCompradas.map(f => f.total_compradas);
-    const porcentajesFrutas = frutasCompradas.map(f => f.porcentaje);
-
-    const ctx = document.getElementById('graficoFrutasCompradas').getContext('2d');
-    const graficoFrutas = new Chart(ctx, {
-        type: 'bar',
+    new Chart(ctxTotalCategorias, {
+        type: 'doughnut',
         data: {
-            labels: nombresFrutas,
+            labels: categorias,
             datasets: [{
-                label: 'Frutas Más Compradas',
-                data: cantidadesFrutas,
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
+                data: total,
+                backgroundColor: ['#FF5733', '#C70039', '#C70039', ' #581845', '#FFC300'],
+                borderColor: ' #DAF7A6',
                 borderWidth: 1
             }]
         },
         options: {
-            scales: {
+            {% comment %} scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }, {% endcomment %}
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Categorias más creadas'
+                  },
+                tooltip: {
+                    callbacks: {
+                        label: function(args) {
+                            console.log(args.raw / total.length)
+                            return `${(Math.floor((args.raw / totalSum)*100))}% del total`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    new Chart(ctxTotalByDate, {
+        type: 'bar',
+        data: {
+            labels: categorias,
+            datasets: [{
+                data: total,
+                backgroundColor: ['#FF5733', '#C70039', '#C70039', ' #581845', '#FFC300'],
+                borderColor: ' #DAF7A6',
+                borderWidth: 1
+            }]
+        },
+        options: {
+           scales: {
                 y: {
                     beginAtZero: true
                 }
             },
             plugins: {
+                title: {
+                    display: true,
+                    text: 'Categorias más creadas'
+                  },
                 tooltip: {
                     callbacks: {
-                        label: function(tooltipItem) {
-                            const index = tooltipItem.dataIndex;
-                            return `${nombresFrutas[index]}: ${porcentajesFrutas[index].toFixed(2)}% del total`;
+                        label: function(args) {
+                            console.log(args.raw / total.length)
+                            return `${(Math.floor((args.raw / totalSum)*100))}% del total`;
                         }
                     }
                 }

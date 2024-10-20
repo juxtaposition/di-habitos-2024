@@ -13,6 +13,10 @@
     text-align: center;
 }
 
+.category-icon { 
+    margin-right: 5px !important;
+}
+
 
 .form-control-modal {
     border-color: black !important;
@@ -93,3 +97,5 @@
     color: #5F0293;
     font-family: "Anta", sans-serif;
 }
+
+
