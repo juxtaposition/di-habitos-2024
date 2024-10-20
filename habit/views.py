@@ -22,7 +22,7 @@ def add_habit(request):
         if form.is_valid():
             habit = form.save(commit=False)
             habit.user = request.user
-            habit.category = form.data.get('category')
+            habit.category_id = form.data.get('category')
             habit.save()
             return JsonResponse({'success': True})
     else:
