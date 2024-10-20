@@ -1,4 +1,3 @@
-from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -8,7 +7,6 @@ from django.db.models import Sum, Count, Q
 import json
 from datetime import datetime
 from collections import Counter
-from django.http import JsonResponse
 
 
 @login_required
