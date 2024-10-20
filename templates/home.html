@@ -54,15 +54,15 @@
                     </div>
                     <div class="col-md" style="text-align: end;">
                         {% if habit.category.name == 'Escuela' %}
-                            <span style="color: darkblue;">
+                            <span style="color: blue;">
                                 <i class="ph ph-graduation-cap category-icon"></i>{{ habit.category.name }} <i class="fas fa-school"></i>
                             </span>   
                         {% elif habit.category.name == 'Trabajo' %}
-                            <span style="color:rgb(191, 7, 123);">
+                            <span style="color:deeppink;">
                                 <i class="ph ph-briefcase category-icon"></i>{{ habit.category.name }}
                             </span>
                         {% elif habit.category.name == 'Hogar' %}
-                            <span style="color:goldenrod;">
+                            <span style="color:darkorange;">
                                 <i class="ph ph-house category-icon"></i>{{ habit.category.name }}
                             </span>
                         {% elif habit.category.name == 'Salud' %}
@@ -70,7 +70,7 @@
                                 <i class="ph ph-heart category-icon"></i>{{ habit.category.name }}
                             </span>
                         {% elif habit.category.name == 'Hobby' %}
-                            <span style="color:darkorange;">
+                            <span style="color: #8500CF;">
                                 <i class="ph ph-game-controller category-icon"></i>{{ habit.category.name }}
                             </span>
                         {% elif habit.category.name == 'Otros' %}

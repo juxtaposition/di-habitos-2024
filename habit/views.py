@@ -3,7 +3,7 @@ from django.template.loader import render_to_string
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .models import Habit, Category
+from .models import Habit
 from .forms import HabitForm
 
 def habit_list(request):
