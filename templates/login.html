@@ -9,11 +9,25 @@
 {% block form_fields %}
     <div class="mb-4 form-group">
         {{ form.username.label_tag }}
-        <input type="text" name="{{ form.username.name }}" class="form-control" id="{{ form.username.id_for_label }}">
+        {{ form.username }}
+        {% if form.username.errors %}
+            <div class="text-danger">
+                {% for error in form.username.errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
     <div class="mb-5 form-group">
         {{ form.password.label_tag }}
-        <input type="password" name="{{ form.password.name }}" class="form-control" id="{{ form.password.id_for_label }}">
+        {{ form.password }}
+        {% if form.password.errors %}
+            <div class="text-danger">
+                {% for error in form.password.errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
     <div class="container">
         <button type="submit" class="btn btn-style">Iniciar Sesión</button>
