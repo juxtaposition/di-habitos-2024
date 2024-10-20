@@ -17,7 +17,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . import views
-from habit.views import dashboard_view
 
 urlpatterns = [
     path('', include("habit.urls")),
@@ -25,6 +24,5 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout, name='logout'),
     path('register/', views.register_view, name='register'),
-    path('dashboard/', dashboard_view, name='dashboard'),
-    # path('accounts/login/', views.login_view, name='account_login')
+    path('statistics/', views.statistics_view, name='statistics')
 ]

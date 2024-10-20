@@ -7,14 +7,14 @@
 {% include 'navbar.html' %}
 
 <div class="container-fluid">
-    <h1 class="text-center my-4">Dashboard</h1>
+    <h1 class="text-center my-4">Estadísticas</h1>
     <div class="row">
         <!-- Tarjeta de Pasos -->
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm rounded">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="card-title mb-0">Pasos</h5>
+                        <h3 class="card-title mb-0">Pasos</h3>
                         <span class="badge" style="background-color: #5F0293;">1000</span>
                     </div>
                     <canvas id="stepsChart" class="w-100" style="height: 280px;"></canvas>
@@ -26,7 +26,7 @@
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm rounded">
                 <div class="card-body">
-                    <h5 class="card-title mb-0" style="font-family: 'Anta';">Tomar Agua</h5>
+                    <h3 class="card-title mb-0" style="font-family: 'Anta';">Tomar Agua</h3>
                     <canvas id="waterChart" class="w-100" style="height: 300px;"></canvas>
                     <div class="text-start mt-3">
                         <p>Hoy <span class="float-end">2.0L</span></p>
@@ -44,10 +44,12 @@
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm rounded">
                 <div class="card-body">
-                    <div style="text-align: center;">
-                        <h3 style="color: #A9A9A9;">Promedio Diario</h3>
-                        <h2>2h 20m</h2>
-                        <p style="color: #8E44AD;">+30m esta semana</p>
+                    <div class="d-flex justify-content-between">
+                        <h3 class="text-left" style="color: #FFFFFF;">Promedio Diario</h3>
+                        <div class="text-right">
+                            <h2>2h 20m</h2>
+                            <p style="color: #8E44AD;">+30m esta semana</p>
+                        </div>
                     </div>
                     <canvas id="averageChart" class="w-100" style="height: 280px;"></canvas>
                     <div style="display: flex; justify-content: space-around; margin-top: 10px;">
@@ -73,9 +75,15 @@
         // Gráfico de pasos
         var ctxSteps = document.getElementById('stepsChart').getContext('2d');
         var gradientSteps = ctxSteps.createLinearGradient(0, 0, 0, 400);
-        gradientSteps.addColorStop(0, 'rgba(255, 99, 132, 1)');
-        gradientSteps.addColorStop(0.5, 'rgba(255, 99, 132, 0.5)');
-        gradientSteps.addColorStop(1, 'rgba(255, 99, 132, 0)');
+        gradientSteps.addColorStop(0, 'rgba(255, 99, 132, 1)');    // Rojo sólido al inicio
+        gradientSteps.addColorStop(0.1, 'rgba(255, 99, 132, 0.9)');
+        gradientSteps.addColorStop(0.2, 'rgba(255, 99, 132, 0.7)');
+        gradientSteps.addColorStop(0.3, 'rgba(255, 99, 132, 0.5)');
+        gradientSteps.addColorStop(0.5, 'rgba(255, 99, 132, 0.3)'); // Rojo más suave
+        gradientSteps.addColorStop(0.7, 'rgba(255, 99, 132, 0.2)');
+        gradientSteps.addColorStop(0.9, 'rgba(255, 99, 132, 0.1)');
+        gradientSteps.addColorStop(1, 'rgba(255, 99, 132, 0)');    // Transparente al final
+
 
         var stepsChart = new Chart(ctxSteps, {
             type: 'line',
@@ -109,7 +117,7 @@
                         borderWidth: 5,
                     },
                     line: {
-                        tension: 0.5
+                        tension: 0.4
                     }
                 },
                 plugins: {
@@ -140,6 +148,15 @@
                     y: {
                         display: false
                     }
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
                 }
             }
         });
@@ -207,21 +224,28 @@
                         data: [1, 1, 2, 2, 3, 3, 3],
                         backgroundColor: '#0061F2',
                         borderWidth: 1,
-                        borderRadius: 3
+                        barThickness: 20,
+                        maxBarThickness: 25
                     },
                     {
                         label: '30m',
                         data: [0.5, 0.3, 0.4, 0.6, 0.4, 0.6, 1.5],
                         backgroundColor: '#1ED36F',
                         borderWidth: 1,
-                        borderRadius: 3
+                        barThickness: 20,
+                        maxBarThickness: 25
                     },
                     {
                         label: '2h',
                         data: [1, 1.5, 1, 2, 2, 2.5, 2.2],
                         backgroundColor: '#FF464F',
                         borderWidth: 1,
-                        borderRadius: 3
+                        borderRadius: {
+                            topLeft: 10,
+                            topRight: 10
+                        },
+                        barThickness: 20,
+                        maxBarThickness: 25
                     }
                 ]
             },
@@ -236,6 +260,13 @@
                         stacked: true,
                         grid: {
                             display: false
+                        },
+                        ticks: {
+                            color: '#A9A9A9',
+                            font: {
+                                family: 'Anta',
+                                size: 14
+                            }
                         }
                     },
                     y: {

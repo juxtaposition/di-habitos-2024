@@ -1,11 +1,9 @@
 from django import forms
 from django.contrib.auth import login, logout as auth_logout
-from django.contrib.auth import login, logout as auth_logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
-
-
+from django.contrib.auth.decorators import login_required
 
 """
 Apartado para la vista login
@@ -72,9 +70,10 @@ def home_view(request):
     return render(request, 'home.html')
 
 """
-Apartado para la vista dashboard
+Apartado para la vista Statistics
 """
-def dashboard_view(request):
+@login_required
+def statistics_view(request):
     steps_data = [1000, 9500, 8000, 12000, 6000]
     water_data = [2, 2.5, 2.2, 2, 2.4, 2.3, 2]
     avg_data = {
@@ -82,7 +81,7 @@ def dashboard_view(request):
         '30m': [30, 40, 50, 60, 70, 80, 90],
         '5h': [300, 350, 400, 450, 500, 550, 600]
     }
-    return render(request, 'dashboard.html', {
+    return render(request, 'statistics.html', {
         'steps_data': steps_data,
         'water_data': water_data,
         'avg_data': avg_data
