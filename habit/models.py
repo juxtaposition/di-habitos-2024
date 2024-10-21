@@ -18,21 +18,20 @@ class Category(models.Model):
         return f"{self.name}"
 
 class Habit(models.Model):
-
     FREQUENCY = (
         ('Diario', 'Diario'),
         ('Semanal', 'Semanal'),
         ('Mensual', 'Mensual')
-        )
+    )
 
-    user         = models.ForeignKey(User, on_delete=models.CASCADE)
-    name         = models.CharField(max_length=100)
-    description  = models.TextField(blank=True)
-    created_at   = models.DateTimeField(auto_now_add=True)
-    updated_at   = models.DateTimeField(auto_now=True)
-    frequency    = models.CharField(max_length=50, choices=FREQUENCY, default='Diario')
-    color        = models.CharField(max_length=25, default='#FF0000')
-    category     = models.ForeignKey(Category, on_delete=models.CASCADE, default=1, related_name='habits')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    frequency = models.CharField(max_length=50, choices=FREQUENCY, default='Diario')
+    color = models.CharField(max_length=25, default='#FF0000')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, default=1, related_name='habits')
+    repetitions = models.PositiveIntegerField(default=1)  # Nuevo campo añadido
 
     def __str__(self):
         return f"{self.name}"
