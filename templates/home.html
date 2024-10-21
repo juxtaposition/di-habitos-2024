@@ -33,7 +33,7 @@
 
     <div class="habits-container">
         {% for habit in habits %}
-            <div class="habit-item">
+            <div class="habit-item" data-habit-id="{{ habit.id }}" data-repetitions="{{ habit.repetitions }}">
                 <div class="row">
                     <div class="col-md-10">
                         <h5>{{ habit.name }}</h5>
@@ -45,17 +45,16 @@
                         <a href="#" data-bs-toggle="modal" data-bs-target="#deleteHabit" data-habit-id="{{ habit.id }}" title="Eliminar hábito" class="icon-option">
                             <i class="ph ph-trash"></i>
                         </a>
-                        
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md">
-                        <p>{{ habit.frequency }}</p>
+                        <p>{{ habit.frequency }} - {{ habit.repetitions }} repeticiones</p>
                     </div>
                     <div class="col-md" style="text-align: end;">
                         {% if habit.category.name == 'Escuela' %}
                             <span style="color: blue;">
-                                <i class="ph ph-graduation-cap category-icon"></i>{{ habit.category.name }} <i class="fas fa-school"></i>
+                                <i class="ph ph-graduation-cap category-icon"></i>{{ habit.category.name }}
                             </span>   
                         {% elif habit.category.name == 'Trabajo' %}
                             <span style="color:deeppink;">
@@ -78,6 +77,13 @@
                                 <i class="ph ph-sparkle category-icon"></i>{{ habit.category.name }}
                             </span>
                         {% endif %}
+                    </div>
+                </div>
+                <div class="progress" style="height: 20px; margin-top: 10px;">
+                    <div class="progress-bar" role="progressbar" 
+                         style="width: {{ habit.get_progress_percentage }}%; background-color: #FFE600; color: black;" 
+                         aria-valuenow="{{ habit.current_progress }}" aria-valuemin="0" aria-valuemax="{{ habit.repetitions }}">
+                        {{ habit.current_progress }}/{{ habit.repetitions }}
                     </div>
                 </div>
             </div>
@@ -166,6 +172,32 @@
                 });
             });
         }
+
+        // Nueva funcionalidad para la barra de progreso
+        const habitItems = document.querySelectorAll('.habit-item');
+        
+        habitItems.forEach(item => {
+            item.addEventListener('click', function(event) {
+                // Evitar que el clic se propague a los botones de editar y eliminar
+                if (event.target.closest('.icon-option')) return;
+
+                const habitId = this.getAttribute('data-habit-id');
+                fetch(`/habit/increment-progress/${habitId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const progressBar = this.querySelector('.progress-bar');
+                    progressBar.style.width = `${data.progress_percentage}%`;
+                    progressBar.setAttribute('aria-valuenow', data.current_progress);
+                    progressBar.textContent = `${data.current_progress}/${data.repetitions}`;
+                });
+            });
+        });
     });
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -192,6 +224,21 @@
         });
     });
 
+    // Función para obtener el token CSRF
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 </script>
 
 {% endblock %}
