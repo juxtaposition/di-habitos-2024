@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include 'navbar.html' %}
+<div class="container mt-5">
+    <h2>Configuración de Notificaciones</h2>
+    <form method="POST">
+        {% csrf_token %}
+        
+        <div class="form-check">
+            <input type="checkbox" name="recibir_promociones" class="form-check-input" id="recibirPromociones" {% if preferencias.recibir_promociones %}checked{% endif %}>
+            <label class="form-check-label" for="recibirPromociones">
+                Quiero recibir notificaciones de promociones
+            </label>
+        </div>
+
+        <div class="mt-3">
+            <label for="frecuencia">Frecuencia de notificaciones:</label>
+            <select name="frecuencia" id="frecuencia" class="form-control">
+                <option value="diaria" {% if preferencias.frecuencia == 'diaria' %}selected{% endif %}>Diaria</option>
+                <option value="semanal" {% if preferencias.frecuencia == 'semanal' %}selected{% endif %}>Semanal</option>
+                <option value="mensual" {% if preferencias.frecuencia == 'mensual' %}selected{% endif %}>Mensual</option>
+            </select>
+        </div>
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary">Guardar Preferencias</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
