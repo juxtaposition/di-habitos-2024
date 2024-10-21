@@ -34,3 +34,9 @@ def register_view(request):
 def logout(request):
     auth_logout(request)
     return redirect('login')
+
+"""
+Apartado para la vista home
+"""
+def home(request):
+    return render(request, 'home.html')

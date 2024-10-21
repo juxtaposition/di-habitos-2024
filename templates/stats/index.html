@@ -1,8 +1,11 @@
+<!DOCTYPE html>
 {% extends 'base.html' %}
 {% load static %}
 
 {% block content %}
 {% include 'navbar.html' %}
+
+<!-- Contenedor principal -->
 <div class="container mt-5">
     <h2 class="text-center">Estadísticas</h2>
 
@@ -26,40 +29,152 @@
                 {% endfor %}
             </select>
         </div>
-        <div class="col-md-12 mt-3">
-            <button type="submit" class="btn btn-primary">Filtrar</button>
+        <div class="col-md-12 mt-3 text-center">
+            <button type="submit" class="btn" style="background-color: #5F0293; color: white;">Aplicar Filtros</button>
         </div>
     </form>
-    
 
-    <div style="width: 300px; height: 300px">
-    <canvas id="byCategory" width="400" height="200"></canvas>
+    <!-- Gráficas principales -->
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <canvas id="byCategory" width="400" height="200"></canvas>
+        </div>
+        <div class="col-md-4 mb-4">
+            <canvas id="byFrequency" width="400" height="200"></canvas>
+        </div>
+        <div class="col-md-4 mb-4">
+            <canvas id="points" width="400" height="200"></canvas>
+        </div>
     </div>
-    <div style="width: 300px; height: 300px"> 
-    <canvas id="byFrequency" width="400" height="200"></canvas>
+
+    <!-- Nuevas Gráficas -->
+    <div class="row">
+        <!-- Tarjeta de Pasos -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm rounded">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="card-title mb-0">Pasos</h3>
+                        <span class="badge" style="background-color: #5F0293;">1000</span>
+                    </div>
+                    <canvas id="stepsChart" class="w-100" style="height: 280px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta de Tomar Agua -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm rounded">
+                <div class="card-body">
+                    <h3 class="card-title mb-0" style="font-family: 'Anta';">Tomar Agua</h3>
+                    <canvas id="waterChart" class="w-100" style="height: 300px;"></canvas>
+                    <div class="text-start mt-3">
+                        <p>Hoy <span class="float-end">2.0L</span></p>
+                        <hr>
+                        <p>Mejor <span class="float-end">2.5L</span></p>
+                        <hr>
+                        <p>Promedio <span class="float-end">2.2L</span></p>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta de Promedio Diario -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm rounded">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h3 class="text-left" style="color: #FFFFFF;">Promedio Diario</h3>
+                        <div class="text-right">
+                            <h2>2h 20m</h2>
+                            <p style="color: #8E44AD;">+30m esta semana</p>
+                        </div>
+                    </div>
+                    <canvas id="averageChart" class="w-100" style="height: 280px;"></canvas>
+                    <div style="display: flex; justify-content: space-around; margin-top: 10px;">
+                        <div style="color: #FF464F;">
+                            <span
+                                style="display:inline-block; width: 10px; height: 10px; background-color: #FF464F; border-radius: 50%;"></span>
+                            2h
+                        </div>
+                        <div style="color: #1ED36F;">
+                            <span
+                                style="display:inline-block; width: 10px; height: 10px; background-color: #1ED36F; border-radius: 50%;"></span>
+                            30m
+                        </div>
+                        <div style="color: #0061F2;">
+                            <span
+                                style="display:inline-block; width: 10px; height: 10px; background-color: #0061F2; border-radius: 50%;"></span>
+                            5h
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div style="width: 300px; height: 300px"> 
-    <canvas id="points" width="400" height="200"></canvas>
+
+    <!-- Sección adicional con más gráficos -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 text-center">
+                    <div class="w-25 mx-auto"> dddd
+                        <canvas id="grafico1"></canvas>
+                    </div>
+                    <p>1,235</p>
+                    <p>################</p>
+                </div>
+                <div class="col-md-6 text-center">
+                    <div class="w-25 mx-auto"> ffff
+                        <canvas id="grafico2"></canvas>
+                    </div>
+                    <p>456</p>
+                    <p>@@@@@@@@@@@@</p>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-6 text-center">
+                    <div class="w-25 mx-auto"> yyyy
+                        <canvas id="grafico3"></canvas>
+                    </div>
+                    <p>1,235 <span style="color: purple;">↓</span></p>
+                    <p>$$$$$$$$$$$$</p>
+                </div>
+                <div class="col-md-6 text-center">
+                    <div class="w-25 mx-auto"> uuuu
+                        <canvas id="grafico4"></canvas>
+                    </div>
+                    <p>456 <span style="color: yellow;">↑</span></p>
+                    <p>%%%%%%%%%%%%</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
+<!-- Librería de Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    const bgcolors             = ['#FF5733', '#C70039', '#C70039', ' #581845', '#FFC300']
-    const categories         = {{ byCategory |safe}}
-    const categoriesName     = Object.keys(categories);
-    const categoriesValue    = Object.values(categories);
+    // Colores para las gráficas
+    const bgcolors = ['#FF5733', '#C70039', '#900C3F', '#581845', '#FFC300'];
 
-    const frequencies         = {{ byFrequency |safe}}
-    const frequenciesName     = Object.keys(frequencies);
-    const frequenciesValue    = Object.values(frequencies);
+    // Datos dinámicos para las categorías
+    const categories = {{ byCategory | safe }};
+    const categoriesName = Object.keys(categories);
+    const categoriesValue = Object.values(categories);
 
-    const totalSum           = categoriesValue.reduce((a, b) => a+b)
-    const ctxByCategory      = document.getElementById('byCategory').getContext('2d');
-    const ctxByFrequency     = document.getElementById('byFrequency').getContext('2d');
-    const ctxPoints          = document.getElementById('points').getContext('2d');
+    // Datos dinámicos para las frecuencias
+    const frequencies = {{ byFrequency | safe }};
+    const frequenciesName = Object.keys(frequencies);
+    const frequenciesValue = Object.values(frequencies);
 
+    const totalSum = categoriesValue.reduce((a, b) => a + b);
+
+    // Gráfico de categorías
+    const ctxByCategory = document.getElementById('byCategory').getContext('2d');
     new Chart(ctxByCategory, {
         type: 'doughnut',
         data: {
@@ -67,7 +182,7 @@
             datasets: [{
                 data: categoriesValue,
                 backgroundColor: bgcolors,
-                borderColor: ' #DAF7A6',
+                borderColor: '#DAF7A6',
                 borderWidth: 1
             }]
         },
@@ -75,13 +190,13 @@
             plugins: {
                 title: {
                     display: true,
-                    text: 'Categorias más creadas'
-                  },
+                    text: 'Categorías más creadas'
+                },
                 tooltip: {
                     callbacks: {
-                        label: function(args) {
-                            console.log(args.raw / total.length)
-                            return `${(Math.floor((args.raw / totalSum)*100))}% del total`;
+                        label: function (args) {
+                            const percentage = (args.raw / totalSum * 100).toFixed(2);
+                            return `${percentage}% del total`;
                         }
                     }
                 }
@@ -89,6 +204,8 @@
         }
     });
 
+    // Gráfico de frecuencias
+    const ctxByFrequency = document.getElementById('byFrequency').getContext('2d');
     new Chart(ctxByFrequency, {
         type: 'bar',
         data: {
@@ -102,7 +219,7 @@
             }]
         },
         options: {
-           scales: {
+            scales: {
                 y: {
                     beginAtZero: true
                 }
@@ -111,11 +228,11 @@
                 title: {
                     display: true,
                     text: 'Frecuencias más usadas'
-                  },
+                },
                 tooltip: {
                     callbacks: {
-                        label: function(args) {
-                            return `${(Math.floor((args.raw / totalSum)*100))}% del total`;
+                        label: function (args) {
+                            return `${(args.raw / totalSum * 100).toFixed(2)}% del total`;
                         }
                     }
                 }
@@ -123,40 +240,344 @@
         }
     });
 
-    /* Esto es un ejemplo que seria bueno crear con fechas del los habitos */
+    // Gráfico de historial de puntos (línea)
+    const ctxPoints = document.getElementById('points').getContext('2d');
     new Chart(ctxPoints, {
         type: 'line',
         data: {
-            labels: [],
-            datasets: [
-              {
-                label: 'history',
-                data: [
-                { x: '2024-10-01', y: 10 },
-                { x: '2024-10-02', y: 15 },
-                { x: '2024-10-03', y: 20 },
-                { x: '2024-10-04', y: 25 },
-                { x: '2024-10-05', y: 30 },
-                { x: '2024-10-06', y: 28 },
-                { x: '2024-10-07', y: 350 },
-            ],
-                borderColor:'#DAF7A6',
-                backgroundColor: bgcolors,
+            labels: ['2024-10-01', '2024-10-02', '2024-10-03', '2024-10-04', '2024-10-05', '2024-10-06', '2024-10-07'],
+            datasets: [{
+                label: 'Historial',
+                data: [10, 15, 20, 25, 30, 28, 35],
+                borderColor: '#DAF7A6',
+                backgroundColor: 'rgba(218, 247, 166, 0.2)',
                 pointStyle: 'circle',
-                pointRadius: 10,
-                pointHoverRadius: 15
-              }
-            ],
+                pointRadius: 5,
+                pointHoverRadius: 8
+            }]
         },
         options: {
-          responsive: true,
-          plugins: {
-            title: {
-              display: true,
-              text: (ctx) => 'Example: ' + ctx.chart.data.datasets[0].pointStyle,
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Evolución de puntos'
+                }
             }
-          }
         }
+    });
+
+    // Nuevas Gráficas
+    document.addEventListener('DOMContentLoaded', function () {
+        // Obtener los datos del backend
+        var stepsData = JSON.parse('{{ steps_data|escapejs }}');
+        var waterData = JSON.parse('{{ water_data|escapejs }}');
+        var dailyAverageData = JSON.parse('{{ daily_average_data|escapejs }}');
+        var grafico1Data = JSON.parse('{{ grafico1_data|escapejs }}');
+        var grafico2Data = JSON.parse('{{ grafico2_data|escapejs }}');
+        var grafico3Data = JSON.parse('{{ grafico3_data|escapejs }}');
+        var grafico4Data = JSON.parse('{{ grafico4_data|escapejs }}');
+
+        // Gráfico de Pasos
+        var ctxSteps = document.getElementById('stepsChart').getContext('2d');
+
+        var gradientSteps = ctxSteps.createLinearGradient(0, 0, 0, 400);
+        gradientSteps.addColorStop(0, 'rgba(255, 99, 132, 1)');
+        gradientSteps.addColorStop(0.1, 'rgba(255, 99, 132, 0.9)');
+        gradientSteps.addColorStop(0.2, 'rgba(255, 99, 132, 0.7)');
+        gradientSteps.addColorStop(0.3, 'rgba(255, 99, 132, 0.5)');
+        gradientSteps.addColorStop(0.5, 'rgba(255, 99, 132, 0.3)');
+        gradientSteps.addColorStop(0.7, 'rgba(255, 99, 132, 0.2)');
+        gradientSteps.addColorStop(0.9, 'rgba(255, 99, 132, 0.1)');
+        gradientSteps.addColorStop(1, 'rgba(255, 99, 132, 0)');
+        var stepsChart = new Chart(ctxSteps, {
+            type: 'line',
+            data: {
+                labels: ['10', '11', '12', '13', '14', '15'],
+                datasets: [{
+                    label: 'Pasos',
+                    data: stepsData,
+                    borderColor: '#FF464F',
+                    borderWidth: 2,
+                    fill: true,
+                    backgroundColor: gradientSteps,
+                    pointRadius: 0,
+                    pointHoverRadius: 8,
+                    pointHoverBorderColor: '#FF464F',
+                    pointHoverBackgroundColor: 'white'
+                }]
+            },
+            options: {
+                elements: {
+                    point: {
+                        radius: function (context) {
+                            return context.dataIndex === 2 ? 10 : 0;
+                        },
+                        backgroundColor: function (context) {
+                            return context.dataIndex === 2 ? '#FF464F' : 'rgba(255, 99, 132, 0)';
+                        },
+                        borderColor: function (context) {
+                            return context.dataIndex === 2 ? '#FFFFFF' : '#FF464F';
+                        },
+                        borderWidth: 5,
+                    },
+                    line: {
+                        tension: 0.4
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (tooltipItem) {
+                                return 'Pasos: ' + tooltipItem.raw;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            borderDash: [5, 5],
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        ticks: {
+                            font: {
+                                family: 'Anta',
+                                size: 12
+                            }
+                        }
+                    },
+                    y: {
+                        display: false
+                    }
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                }
+            }
+        });
+
+        // Gráfico de Tomar Agua
+        var ctxWater = document.getElementById('waterChart').getContext('2d');
+        var waterChart = new Chart(ctxWater, {
+            type: 'bar',
+            data: {
+                labels: ['L', 'M', 'M', 'J', 'V', 'S', 'D'],
+                datasets: [{
+                    label: 'Litros de Agua',
+                    data: waterData,
+                    backgroundColor: '#FF464F',
+                    borderWidth: 1,
+                    borderRadius: 10,
+                    borderSkipped: false,
+                    barThickness: 20
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#A9A9A9',
+                            font: {
+                                size: 14,
+                                family: 'Anta'
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        max: 3,
+                        ticks: {
+                            display: false
+                        },
+                        grid: {
+                            color: '#E0E0E0',
+                            borderDash: [5, 5],
+                            drawBorder: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfico de Promedio Diario
+        var ctxAverage = document.getElementById('averageChart').getContext('2d');
+        var averageChart = new Chart(ctxAverage, {
+            type: 'bar',
+            data: {
+                labels: ['L', 'M', 'M', 'J', 'V', 'S', 'D'],
+                datasets: [
+                    {
+                        label: '5h',
+                        data: dailyAverageData['5h'],
+                        backgroundColor: '#0061F2',
+                        borderWidth: 1,
+                        barThickness: 20,
+                        maxBarThickness: 25
+                    },
+                    {
+                        label: '30m',
+                        data: dailyAverageData['30m'],
+                        backgroundColor: '#1ED36F',
+                        borderWidth: 1,
+                        barThickness: 20,
+                        maxBarThickness: 25
+                    },
+                    {
+                        label: '2h',
+                        data: dailyAverageData['2h'],
+                        backgroundColor: '#FF464F',
+                        borderWidth: 1,
+                        borderRadius: {
+                            topLeft: 10,
+                            topRight: 10
+                        },
+                        barThickness: 20,
+                        maxBarThickness: 25
+                    }
+                ]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#A9A9A9',
+                            font: {
+                                family: 'Anta',
+                                size: 14
+                            }
+                        }
+                    },
+                    y: {
+                        stacked: true,
+                        grid: {
+                            color: '#E0E0E0',
+                            borderDash: [5, 5],
+                            drawBorder: false
+                        },
+                        ticks: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Gráfico 1
+        const ctx1 = document.getElementById('grafico1').getContext('2d');
+        const grafico1 = new Chart(ctx1, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: grafico1Data,
+                    backgroundColor: ['#800080', '#EEEEEE']
+                }]
+            },
+            options: {
+                cutout: '70%',
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Gráfico 2
+        const ctx2 = document.getElementById('grafico2').getContext('2d');
+        const grafico2 = new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: grafico2Data,
+                    backgroundColor: ['#FFCC00', '#EEEEEE']
+                }]
+            },
+            options: {
+                cutout: '70%',
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Gráfico 3
+        const ctx3 = document.getElementById('grafico3').getContext('2d');
+        const grafico3 = new Chart(ctx3, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    data: grafico3Data,
+                    borderColor: '#800080',
+                    tension: 0.4,
+                    fill: false,
+                    pointRadius: 0,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { display: false },
+                    y: { display: false }
+                }
+            }
+        });
+
+        // Gráfico 4
+        const ctx4 = document.getElementById('grafico4').getContext('2d');
+        const grafico4 = new Chart(ctx4, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    data: grafico4Data,
+                    borderColor: '#FFCC00',
+                    tension: 0.4,
+                    fill: false,
+                    pointRadius: 0,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { display: false },
+                    y: { display: false }
+                }
+            }
+        });
     });
 </script>
 

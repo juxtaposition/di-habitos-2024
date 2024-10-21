@@ -11,40 +11,57 @@ from collections import Counter
 
 @login_required
 def estadisticas(request):
-
-    usuario        = request.user
-    start_date     = request.GET.get('start_date')
-    end_date       = request.GET.get('end_date')
-    category_id    = request.GET.get('category')
-    frequency      = request.GET.get('frequency')
-    categories     = Category.objects.all()
-    habits         = Habit.objects.all()
+    usuario = request.user
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    category_id = request.GET.get('category')
+    frequency = request.GET.get('frequency')
+    categories = Category.objects.all()
+    habits = Habit.objects.all()
     category_names = []
-    freq_names     = []
+    freq_names = []
 
-    if not (category_id is None):
+    if category_id:
         habits = habits.filter(user_id=usuario, category_id=category_id)
-    
-    if not (frequency is None):
-        habits = habits.filter(user_id=usuario, frequency=frequency)
 
-    if (frequency is None) and (frequency is None):
-        habits = habits.filter(user_id=usuario)
+    if frequency:
+        habits = habits.filter(user_id=usuario, frequency=frequency)
 
     if start_date and end_date:
         habits = habits.filter(created_at__range=[parse_date(start_date), parse_date(end_date)])
- 
+
     for h in habits:
         category_names.append(h.category.name)
-    
+
     for f in habits:
         freq_names.append(f.frequency)
 
-    allCategories  = dict(Counter(category_names)) # [{"category": count}]
+    allCategories = dict(Counter(category_names))
     allFrequencies = dict(Counter(freq_names))
 
+    # Agrega los datos de los pasos, agua y promedio diario (simulado)
+    steps_data = [1000, 8000, 9500, 7000, 6000, 7500]
+    water_data = [2.0, 2.1, 2.3, 2.0, 2.4, 2.5, 2.2]
+    daily_average_data = {
+        '5h': [1, 1, 2, 2, 3, 3, 3],
+        '30m': [0.5, 0.3, 0.4, 0.6, 0.4, 0.6, 1.5],
+        '2h': [1, 1.5, 1, 2, 2, 2.5, 2.2]
+    }
+    grafico1_data = [70, 30]
+    grafico2_data = [50, 50]
+    grafico3_data = [10, 20, 15, 25, 30, 40]
+    grafico4_data = [20, 30, 25, 35, 40, 45]
+
     return render(request, 'stats/index.html', {
-         'byCategory': json.dumps(allCategories),
-         'byFrequency': json.dumps(allFrequencies),
-         'categories': categories
-        })
+        'byCategory': json.dumps(allCategories),
+        'byFrequency': json.dumps(allFrequencies),
+        'categories': categories,
+        'steps_data': json.dumps(steps_data),
+        'water_data': json.dumps(water_data),
+        'daily_average_data': json.dumps(daily_average_data),
+        'grafico1_data': json.dumps(grafico1_data),
+        'grafico2_data': json.dumps(grafico2_data),
+        'grafico3_data': json.dumps(grafico3_data),
+        'grafico4_data': json.dumps(grafico4_data),
+    })
+
