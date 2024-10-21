@@ -33,26 +33,7 @@ def configurar_notificaciones(request):
         'notificaciones': notificaciones,  # Pasar todas las notificaciones
     }
     return render(request, 'notify/config.html', contexto)
-
-
-def enviar_notificaciones():
-    hoy = datetime.now()
-
-    usuarios_diarios   = PreferenciasNotificacion.objects.filter(frecuencia='diaria')
-    usuarios_semanales = PreferenciasNotificacion.objects.filter(frecuencia='semanal')
-    usuarios_mensuales = PreferenciasNotificacion.objects.filter(frecuencia='mensual')
-
-    for preferencias in usuarios_diarios:
-        Notificacion.objects.create(usuario=preferencias.usuario, mensaje="¡Promoción diaria!")
-
-    if hoy.weekday() == 0:  # Enviar notificaciones semanales solo los lunes
-        for preferencias in usuarios_semanales:
-            Notificacion.objects.create(usuario=preferencias.usuario, mensaje="¡Promoción semanal!")
-
-    if hoy.day == 1:  # Enviar notificaciones mensuales solo el primer día del mes
-        for preferencias in usuarios_mensuales:
-            Notificacion.objects.create(usuario=preferencias.usuario, mensaje="¡Promoción mensual!")
-          
+    
 
 @login_required
 def marcar_notificaciones_leidas(request):
