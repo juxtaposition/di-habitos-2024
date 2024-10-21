@@ -35,7 +35,7 @@
         });
 
         </script>
-    <a class="navbar-brand" href="">
+    <a class="navbar-brand" href="/">
         <img src="{% static 'img/logoNavbar.png'%}" width="250" height="70" alt="logoNavbar">
     </a>
     <div class="collapse navbar-collapse" id="navbarContent">
@@ -68,6 +68,7 @@
                     <img src="{% static 'img/user.png' %}" width="50" height="50" class="rounded-circle" alt="User Profile">
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end menu" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item item" href="{% url 'configurar_notificaciones' %}">Configurar Notificacines<i class="ph"></i></a></li>
                     <li><a class="dropdown-item item" href="{% url 'logout' %}">Cerrar Sesión <i class="ph ph-sign-out logout-icon"></i></a></li>
                 </ul>
             </li>
