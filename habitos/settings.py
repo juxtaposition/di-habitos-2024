@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'habitos',
     'habit',
     'notificaciones',
+    'stats'
 ]
 
 MIDDLEWARE = [

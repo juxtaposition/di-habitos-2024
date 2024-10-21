@@ -32,7 +32,7 @@ class Habit(models.Model):
     updated_at   = models.DateTimeField(auto_now=True)
     frequency    = models.CharField(max_length=50, choices=FREQUENCY, default='Diario')
     color        = models.CharField(max_length=25, default='#FF0000')
-    category     = models.ForeignKey(Category, on_delete=models.CASCADE, default=1)
+    category     = models.ForeignKey(Category, on_delete=models.CASCADE, default=1, related_name='habits')
 
     def __str__(self):
         return f"{self.name}"
