@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+{% include 'navbar.html' %}
+<div class="container mt-5">
+    <h2 class="text-center">Estadísticas</h2>
+
+    <!-- Formulario para filtrar por fecha y categoría -->
+    <form method="GET" class="row mb-4">
+        <div class="col-md-4">
+            <label for="start_date">Fecha Inicio:</label>
+            <input type="date" name="start_date" class="form-control" id="start_date">
+        </div>
+        <div class="col-md-4">
+            <label for="end_date">Fecha Fin:</label>
+            <input type="date" name="end_date" class="form-control" id="end_date">
+        </div>
+        <div class="col-md-4">
+            <label for="categorias">Categorías:</label>
+            <select name="categoria" class="form-control" id="categoria">
+                <!-- Mostrar dinámicamente las categorías -->
+                <option value="">Selecciona</option>
+                {% for c in categories %}
+                <option value="{{ c.id }}">{{ c.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-12 mt-3">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+    </form>
+    
+
+    <div style="width: 300px; height: 300px">
+    <canvas id="byCategory" width="400" height="200"></canvas>
+    </div>
+    <div style="width: 300px; height: 300px"> 
+    <canvas id="byFrequency" width="400" height="200"></canvas>
+    </div>
+    <div style="width: 300px; height: 300px"> 
+    <canvas id="points" width="400" height="200"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const bgcolors             = ['#FF5733', '#C70039', '#C70039', ' #581845', '#FFC300']
+    const categories         = {{ byCategory |safe}}
+    const categoriesName     = Object.keys(categories);
+    const categoriesValue    = Object.values(categories);
+
+    const frequencies         = {{ byFrequency |safe}}
+    const frequenciesName     = Object.keys(frequencies);
+    const frequenciesValue    = Object.values(frequencies);
+
+    const totalSum           = categoriesValue.reduce((a, b) => a+b)
+    const ctxByCategory      = document.getElementById('byCategory').getContext('2d');
+    const ctxByFrequency     = document.getElementById('byFrequency').getContext('2d');
+    const ctxPoints          = document.getElementById('points').getContext('2d');
+
+    new Chart(ctxByCategory, {
+        type: 'doughnut',
+        data: {
+            labels: categoriesName,
+            datasets: [{
+                data: categoriesValue,
+                backgroundColor: bgcolors,
+                borderColor: ' #DAF7A6',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Categorias más creadas'
+                  },
+                tooltip: {
+                    callbacks: {
+                        label: function(args) {
+                            console.log(args.raw / total.length)
+                            return `${(Math.floor((args.raw / totalSum)*100))}% del total`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    new Chart(ctxByFrequency, {
+        type: 'bar',
+        data: {
+            labels: frequenciesName,
+            datasets: [{
+                label: "Frecuencias",
+                data: frequenciesValue,
+                backgroundColor: bgcolors,
+                borderColor: '#DAF7A6',
+                borderWidth: 1
+            }]
+        },
+        options: {
+           scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Frecuencias más usadas'
+                  },
+                tooltip: {
+                    callbacks: {
+                        label: function(args) {
+                            return `${(Math.floor((args.raw / totalSum)*100))}% del total`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    /* Esto es un ejemplo que seria bueno crear con fechas del los habitos */
+    new Chart(ctxPoints, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [
+              {
+                label: 'history',
+                data: [
+                { x: '2024-10-01', y: 10 },
+                { x: '2024-10-02', y: 15 },
+                { x: '2024-10-03', y: 20 },
+                { x: '2024-10-04', y: 25 },
+                { x: '2024-10-05', y: 30 },
+                { x: '2024-10-06', y: 28 },
+                { x: '2024-10-07', y: 350 },
+            ],
+                borderColor:'#DAF7A6',
+                backgroundColor: bgcolors,
+                pointStyle: 'circle',
+                pointRadius: 10,
+                pointHoverRadius: 15
+              }
+            ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: (ctx) => 'Example: ' + ctx.chart.data.datasets[0].pointStyle,
+            }
+          }
+        }
+    });
+</script>
+
+{% endblock %}
