@@ -1,0 +1,49 @@
+:root {
+    --color-purple: #8500CF;
+    --color-grey: grey;
+    --color-button: #fdffff;
+    --color-black: #000;
+}
+
+#frecuencia {
+    border: 1px solid black;
+    border-radius: 4px; 
+}
+
+.settings-text {
+    font-family: "Anta", sans-serif;
+    text-align: end;
+}
+
+.switch-button {
+    display: inline-block;
+    width: 100%;
+}
+.switch-button .switch-button__checkbox {
+    display: none;
+}
+.switch-button .switch-button__label {
+    background-color: var(--color-grey);
+    width: 3.2rem;
+    height: 1.2rem;
+    border-radius: 3rem;
+    display: inline-block;
+    position: relative;
+}
+.switch-button .switch-button__label:before {
+    transition: .2s;
+    display: block;
+    position: absolute;
+    width: 1.2rem;
+    height: 1.2rem;
+    background-color: var(--color-button);
+    content: '';
+    border-radius: 50%;
+    box-shadow: inset 0px 0px 0px 1px var(--color-black);
+}
+.switch-button .switch-button__checkbox:checked + .switch-button__label {
+    background-color: var(--color-purple);
+}
+.switch-button .switch-button__checkbox:checked + .switch-button__label:before {
+    transform: translateX(2rem);
+}

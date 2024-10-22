@@ -13,6 +13,7 @@
     text-align: center;
 }
 
+
 .category-icon { 
     margin-right: 5px !important;
 }
@@ -62,12 +63,6 @@
     color: #666;
 }
 
-.mis-habitos {
-    color: #5F0293;
-    font-family: "Anta", sans-serif;
-    text-align: center;
-}
-
 .modal-body.delete {
     font-family: "Anta", sans-serif;
     text-align: center;
@@ -93,9 +88,14 @@
     color: black !important;
 }
 
-.welcome {
+.title-page {
     color: #5F0293;
     font-family: "Anta", sans-serif;
 }
 
+.subtitle-page {
+    color: #5F0293;
+    font-family: "Anta", sans-serif;
+    text-align: center;
+}
 

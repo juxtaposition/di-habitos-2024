@@ -29,21 +29,22 @@
 
 .nav-link {
     color: white !important;
-    font-size: 1rem !important;
+    font-size: 1.1rem !important;
     margin: 20px; 
-    transition: transform 0.3s ease, color 0.3s ease;
+    text-decoration: none;
+    transition: transform 0.3s ease;
 }
 
 .nav-link:hover {
     transform: translateY(-5px);
 }
 
-.ph-bell {
-    font-size: 1.3rem; 
-    transition: transform 0.3s ease;
+.notify-icon {
+    color: white !important;
+    font-size: 1.5rem; 
 }
 
-.ph-bell:hover {
+.notify-icon:hover {
     transform: translateY(-5px);
 }
 
