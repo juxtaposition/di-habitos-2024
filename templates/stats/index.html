@@ -10,7 +10,7 @@
     <h2 class="text-center">Estadísticas</h2>
 
     <!-- Formulario para filtrar por fecha y categoría -->
-    <form method="GET" class="row mb-4">
+    <form method="GET" action="{% url 'stats' %}" class="row mb-4">
         <div class="col-md-4">
             <label for="start_date">Fecha Inicio:</label>
             <input type="date" name="start_date" class="form-control" id="start_date">
@@ -20,7 +20,7 @@
             <input type="date" name="end_date" class="form-control" id="end_date">
         </div>
         <div class="col-md-4">
-            <label for="categorias">Categorías:</label>
+            <label for="categoria">Categorías:</label>
             <select name="categoria" class="form-control" id="categoria">
                 <!-- Mostrar dinámicamente las categorías -->
                 <option value="">Selecciona</option>
@@ -33,22 +33,24 @@
             <button type="submit" class="btn" style="background-color: #5F0293; color: white;">Aplicar Filtros</button>
         </div>
     </form>
+    
+    
 
     <!-- Gráficas principales -->
     <div class="row">
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm rounded">
                 <div class="card-body">
-                    <h3 class="card-title mb-0 text-start" style="font-family: 'Anta';">Categorías más creadas</h3>
-                    <canvas id="byCategory" class="w-100" style="height: 200px;"></canvas>
+                    <h3 class="card-title mb-0 text-start" style="font-family: 'Anta';">Frecuencias más usadas</h3>
+                    <canvas id="byFrequency" class="w-100" style="height: 200px;"></canvas>
                 </div>
             </div>
         </div>
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm rounded">
                 <div class="card-body">
-                    <h3 class="card-title mb-0 text-start" style="font-family: 'Anta';">Frecuencias más usadas</h3>
-                    <canvas id="byFrequency" class="w-100" style="height: 200px;"></canvas>
+                    <h3 class="card-title mb-0 text-start" style="font-family: 'Anta';">Categorías más creadas</h3>
+                    <canvas id="byCategory" class="w-100" style="height: 200px;"></canvas>
                 </div>
             </div>
         </div>

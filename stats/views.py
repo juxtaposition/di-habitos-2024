@@ -8,7 +8,6 @@ import json
 from collections import Counter
 from datetime import datetime
 
-
 @login_required
 def estadisticas(request):
     usuario = request.user
@@ -21,25 +20,35 @@ def estadisticas(request):
     category_id = request.GET.get("category")
     frequency = request.GET.get("frequency")
 
-    # Inicializar queryset de hábitos y listas para los nombres de categorías y frecuencias
+    # Inicializar queryset de hábitos
     habits = Habit.objects.filter(user_id=usuario)
-    category_names = []
-    freq_names = []
 
-    # Filtrar los hábitos por categoría, frecuencia, y rango de fechas si se especifica
+    # Si no hay fechas proporcionadas, usar todos los hábitos
+    if not start_date or not end_date:
+        habits = Habit.objects.filter(user_id=usuario)  # No filtrar por rango de fechas
+
+    # Si se proporcionan fechas, aplicar el filtrado por rango de fechas
+    if start_date and end_date:
+        try:
+            start_date_parsed = parse_date(start_date)
+            end_date_parsed = parse_date(end_date)
+            if start_date_parsed and end_date_parsed:
+                habits = habits.filter(created_at__range=[start_date_parsed, end_date_parsed])
+        except ValueError:
+            # Manejar el error, quizás enviando un mensaje de error al contexto
+            context['error'] = "Formato de fecha inválido."
+
+    # Filtrar los hábitos por categoría si se especifica
     if category_id:
         habits = habits.filter(category_id=category_id)
     if frequency:
         habits = habits.filter(frequency=frequency)
-    if start_date and end_date:
-        habits = habits.filter(
-            created_at__range=[parse_date(start_date), parse_date(end_date)]
-        )
+
+    # Aquí los hábitos ya están filtrados por fecha, categoría, y frecuencia
 
     # Obtener los nombres de las categorías y frecuencias
-    for h in habits:
-        category_names.append(h.category.name)
-        freq_names.append(h.frequency)
+    category_names = habits.values_list("category__name", flat=True)
+    freq_names = habits.values_list("frequency", flat=True)
 
     # Contar hábitos por categoría y frecuencia
     allCategories = dict(Counter(category_names))
@@ -48,13 +57,7 @@ def estadisticas(request):
     # Obtener el conteo total de hábitos creados
     total_habits_created = habits.count()
 
-    # Obtener datos para la gráfica de hábitos creados por fecha
-    habits_by_date = (
-        habits.values("created_at__date")
-        .annotate(count=Count("id"))
-        .order_by("created_at__date")
-    )
-    # Obtener datos para la gráfica de hábitos creados por fecha
+    # Obtener datos para la gráfica de hábitos creados por fecha (después de aplicar filtros)
     habits_by_date = (
         habits.values("created_at__date")
         .annotate(count=Count("id"))
@@ -62,15 +65,18 @@ def estadisticas(request):
     )
 
     # Definir variables separadas para labels y data
-    labels = [
-        habit["created_at__date"].strftime("%Y-%m-%d") for habit in habits_by_date
-    ]
+    labels = [habit["created_at__date"].strftime("%Y-%m-%d") for habit in habits_by_date]
     data = [habit["count"] for habit in habits_by_date]
 
     # Luego puedes crear steps_data como un diccionario si lo necesitas
     steps_data = {"labels": labels, "data": data}
+    
+    # Si sólo hay un día en el filtro, duplicarlo para que se visualice correctamente
+    if len(labels) == 1:
+        labels.append(labels[0])  # Duplicar la misma fecha
+        data.append(data[0])  # Duplicar el mismo valor
 
-    # Agregar datos simulados para otras gráficas (pasos, agua, promedio diario)
+    # Simular datos para otras gráficas si es necesario (pero basados en el queryset filtrado si es posible)
     water_data = [2.0, 2.1, 2.3, 2.0, 2.4, 2.5, 2.2]
     daily_average_data = {
         "5h": [1, 1, 2, 2, 3, 3, 3],
@@ -88,8 +94,8 @@ def estadisticas(request):
         "byFrequency": json.dumps(allFrequencies),
         "categories": categories,
         "total_habits_created": total_habits_created,
-        "labels": labels,  # Nueva variable para etiquetas
-        "data": data,  # Nueva variable para datos
+        "labels": labels, 
+        "data": data,
         "water_data": json.dumps(water_data),
         "daily_average_data": json.dumps(daily_average_data),
         "grafico1_data": json.dumps(grafico1_data),
