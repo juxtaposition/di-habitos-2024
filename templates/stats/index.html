@@ -37,26 +37,44 @@
     <!-- Gráficas principales -->
     <div class="row">
         <div class="col-md-4 mb-4">
-            <canvas id="byCategory" width="400" height="200"></canvas>
+            <div class="card shadow-sm rounded">
+                <div class="card-body">
+                    <h3 class="card-title mb-0 text-start" style="font-family: 'Anta';">Categorías más creadas</h3>
+                    <canvas id="byCategory" class="w-100" style="height: 200px;"></canvas>
+                </div>
+            </div>
         </div>
         <div class="col-md-4 mb-4">
-            <canvas id="byFrequency" width="400" height="200"></canvas>
+            <div class="card shadow-sm rounded">
+                <div class="card-body">
+                    <h3 class="card-title mb-0 text-start" style="font-family: 'Anta';">Frecuencias más usadas</h3>
+                    <canvas id="byFrequency" class="w-100" style="height: 200px;"></canvas>
+                </div>
+            </div>
         </div>
         <div class="col-md-4 mb-4">
-            <canvas id="points" width="400" height="200"></canvas>
+            <div class="card shadow-sm rounded">
+                <div class="card-body">
+                    <h3 class="card-title mb-0 text-start" style="font-family: 'Anta';">Evolución de puntos</h3>
+                    <canvas id="points" class="w-100" style="height: 200px;"></canvas>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Nuevas Gráficas -->
     <div class="row">
         <!-- Tarjeta de Pasos -->
+        <!-- Tarjeta de Hábitos Creados -->
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm rounded">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h3 class="card-title mb-0">Pasos</h3>
-                        <span class="badge" style="background-color: #5F0293;">1000</span>
+                        <h3 class="card-title mb-0">Hábitos Creados</h3>
+                        <!-- Mostrar el total de hábitos creados -->
+                        <span class="badge" style="background-color: #5F0293;">{{ total_habits_created }}</span>
                     </div>
+                    <!-- Gráfico para mostrar los hábitos creados -->
                     <canvas id="stepsChart" class="w-100" style="height: 280px;"></canvas>
                 </div>
             </div>
@@ -188,10 +206,6 @@
         },
         options: {
             plugins: {
-                title: {
-                    display: true,
-                    text: 'Categorías más creadas'
-                },
                 tooltip: {
                     callbacks: {
                         label: function (args) {
@@ -225,10 +239,6 @@
                 }
             },
             plugins: {
-                title: {
-                    display: true,
-                    text: 'Frecuencias más usadas'
-                },
                 tooltip: {
                     callbacks: {
                         label: function (args) {
@@ -259,10 +269,6 @@
         options: {
             responsive: true,
             plugins: {
-                title: {
-                    display: true,
-                    text: 'Evolución de puntos'
-                }
             }
         }
     });
@@ -270,7 +276,7 @@
     // Nuevas Gráficas
     document.addEventListener('DOMContentLoaded', function () {
         // Obtener los datos del backend
-        var stepsData = JSON.parse('{{ steps_data|escapejs }}');
+
         var waterData = JSON.parse('{{ water_data|escapejs }}');
         var dailyAverageData = JSON.parse('{{ daily_average_data|escapejs }}');
         var grafico1Data = JSON.parse('{{ grafico1_data|escapejs }}');
@@ -278,7 +284,7 @@
         var grafico3Data = JSON.parse('{{ grafico3_data|escapejs }}');
         var grafico4Data = JSON.parse('{{ grafico4_data|escapejs }}');
 
-        // Gráfico de Pasos
+        // Gráfico de hábitos creados
         var ctxSteps = document.getElementById('stepsChart').getContext('2d');
 
         var gradientSteps = ctxSteps.createLinearGradient(0, 0, 0, 400);
@@ -290,13 +296,17 @@
         gradientSteps.addColorStop(0.7, 'rgba(255, 99, 132, 0.2)');
         gradientSteps.addColorStop(0.9, 'rgba(255, 99, 132, 0.1)');
         gradientSteps.addColorStop(1, 'rgba(255, 99, 132, 0)');
+        
+        const labels_stepsChart = {{ labels|safe }};
+        const data_stepsChart = {{ data|safe }};
+
         var stepsChart = new Chart(ctxSteps, {
             type: 'line',
             data: {
-                labels: ['10', '11', '12', '13', '14', '15'],
+                labels: labels_stepsChart, 
                 datasets: [{
-                    label: 'Pasos',
-                    data: stepsData,
+                    label: 'Hábitos creados',
+                    data: data_stepsChart,
                     borderColor: '#FF464F',
                     borderWidth: 2,
                     fill: true,
@@ -332,7 +342,7 @@
                     tooltip: {
                         callbacks: {
                             label: function (tooltipItem) {
-                                return 'Pasos: ' + tooltipItem.raw;
+                                return 'Hábitos: ' + tooltipItem.raw;
                             }
                         }
                     }
@@ -488,7 +498,7 @@
                 }
             }
         });
-        
+
         // Gráfico 1
         const ctx1 = document.getElementById('grafico1').getContext('2d');
         const grafico1 = new Chart(ctx1, {
