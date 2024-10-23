@@ -7,16 +7,13 @@ from django.views.decorators.http import require_POST
 from .models import Habit
 from .forms import HabitForm
 
+@login_required
 def habit_list(request):
-    if request.user.is_authenticated:
-        habits = Habit.objects.filter(user=request.user)
-        for habit in habits:
-            habit.reset_progress_if_needed()
-        userQuery = User.objects.get(pk=request.user.id)
-        return render(request, 'home.html', {'habits': habits, 'username': userQuery.first_name})
-    else:
-        return redirect('login')
-
+    habits = Habit.objects.filter(user=request.user)
+    for habit in habits:
+        habit.reset_progress_if_needed()
+    userQuery = User.objects.get(pk=request.user.id)
+    return render(request, 'home.html', {'habits': habits, 'username': userQuery.first_name})
 
 @login_required
 def add_habit(request):
