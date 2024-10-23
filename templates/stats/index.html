@@ -246,8 +246,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-  // Colores para las gráficas
-  const bgcolors = ['#FF5733', '#C70039', '#900C3F', '#581845', '#FFC300'];
 
   // Datos dinámicos para las categorías
   const categories = {{ byCategory | safe }};
@@ -261,32 +259,53 @@
 
   const totalSum = categoriesValue.reduce((a, b) => a + b);
 
-  // Gráfico de categorías
-  const ctxByCategory = document.getElementById('byCategory').getContext('2d');
-  new Chart(ctxByCategory, {
-      type: 'doughnut',
-      data: {
-          labels: categoriesName,
-          datasets: [{
-              data: categoriesValue,
-              backgroundColor: bgcolors,
-              borderColor: '#DAF7A6',
-              borderWidth: 1
-          }]
-      },
-      options: {
-          plugins: {
-              tooltip: {
-                  callbacks: {
-                      label: function (args) {
-                          const percentage = (args.raw / totalSum * 100).toFixed(2);
-                          return `${percentage}% del total`;
-                      }
-                  }
-              }
-          }
-      }
-  });
+  // Definir los colores según las categorías
+  const bgcolors = categoriesName.map(category => {
+    switch(category) {
+        case 'Escuela':
+            return 'blue';
+        case 'Trabajo':
+            return 'deeppink';
+        case 'Hogar':
+            return 'darkorange';
+        case 'Salud':
+            return 'rgb(9, 192, 122)';
+        case 'Hobby':
+            return '#8500CF';
+        case 'Otros':
+            return 'olive';
+        default:
+            return '#CCCCCC';
+    }
+});
+
+// Gráfico de categorías
+const ctxByCategory = document.getElementById('byCategory').getContext('2d');
+new Chart(ctxByCategory, {
+    type: 'doughnut',
+    data: {
+        labels: categoriesName,
+        datasets: [{
+            data: categoriesValue,
+            backgroundColor: bgcolors,
+            borderColor: '#DAF7A6',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function (args) {
+                        const percentage = (args.raw / totalSum * 100).toFixed(2);
+                        return `${percentage}% del total`;
+                    }
+                }
+            }
+        }
+    }
+});
+
 
   // Gráfico de frecuencias
   const ctxByFrequency = document.getElementById('byFrequency').getContext('2d');
