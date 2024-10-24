@@ -129,16 +129,11 @@ def estadisticas(request):
     habit_labels = progress_labels  # Usar las etiquetas obtenidas de la base de datos
 
     # Simular datos para otras gráficas si es necesario (pero basados en el queryset filtrado si es posible)
-    water_data = [2.0, 2.1, 2.3, 2.0, 2.4, 2.5, 2.2]
     daily_average_data = {
         "5h": [1, 1, 2, 2, 3, 3, 3],
         "30m": [0.5, 0.3, 0.4, 0.6, 0.4, 0.6, 1.5],
         "2h": [1, 1.5, 1, 2, 2, 2.5, 2.2],
     }
-    grafico1_data = [70, 30]
-    grafico2_data = [50, 50]
-    grafico3_data = [10, 20, 15, 25, 30, 40]
-    grafico4_data = [20, 30, 25, 35, 40, 45]
 
     # Contexto para el template
     context = {
@@ -148,19 +143,14 @@ def estadisticas(request):
         "total_habits_created": total_habits_created,
         "labels": labels, 
         "data": data,
-        "water_data": json.dumps(water_data),
         "daily_average_data": json.dumps(daily_average_data),
-        "grafico1_data": json.dumps(grafico1_data),
-        "grafico2_data": json.dumps(grafico2_data),
-        "grafico3_data": json.dumps(grafico3_data),
-        "grafico4_data": json.dumps(grafico4_data),
         "today_progress": today_progress,
         "best_progress": best_progress,
         "average_progress": average_progress,
         "progress_labels": progress_labels,
         "progress_data": progress_data,
         "total_repetitions": total_repetitions,
-        "user_habits": user_habits,  # Agregar user_habits al contexto
+        "user_habits": user_habits,  
         "habit_labels": habit_labels,
         "habit_data": habit_data,
         "expected_progress": expected_progress, 
