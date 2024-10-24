@@ -80,40 +80,6 @@
 
   <!-- Nuevas Gráficas -->
   <div class="row">
-    <!-- Tarjeta del Hábito Específico -->
-    <div class="col-md-4 mb-4">
-        <div class="card shadow-sm rounded">
-            <div class="card-body text-center">  <!-- Centrar el contenido del cuerpo de la tarjeta -->
-                <h3 class="card-title mb-0" style="font-family: 'Anta'">
-                    Hábito Específico
-                </h3>
-                <form method="GET" class="mt-3">  <!-- Añadir margen superior al formulario -->
-                    <select name="habit_id" id="habit_id" class="form-select">  <!-- Añadir clase para estilizar el select -->
-                        {% for habit in user_habits %}
-                        <option value="{{ habit.id }}" {% if habit.id|stringformat:"s" == request.GET.habit_id %}selected{% endif %}>
-                            {{ habit.name }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                    <button type="submit" class="btn" style="background-color: #5f0293; color: white; margin-top: 10px;">Filtrar</button>  <!-- Estilos para el botón -->
-                </form> 
-                <div style="margin: 20px 0;"> <!-- Espacio entre el botón y la gráfica -->
-                    <canvas id="waterChart" class="w-100" style="height: 300px"></canvas>
-                </div>
-                <div class="text-start mt-3">
-                    <p>Hoy <span class="float-end">{{ today_progress }}</span></p>
-                    <hr />
-                    <p>Mejor <span class="float-end">{{ best_progress }}</span></p>
-                    <hr />
-                    <p>Promedio <span class="float-end">{{ average_progress }}</span></p>
-                    <hr />
-                    <p>Progreso Final Esperado <span class="float-end">{{ expected_progress }}</span></p>  <!-- Texto para el progreso final esperado -->
-                    <hr />
-                </div>
-            </div>
-        </div>
-    </div>
-    
     <!-- Tarjeta de Hábitos Creados -->
 <div class="col-md-4 mb-4">
   <div class="card shadow-sm rounded">
@@ -129,22 +95,56 @@
   </div>
 </div>
 
-    <!-- Tarjeta de Promedio Diario -->
-    <div class="col-md-4 mb-4">
-      <div class="card shadow-sm rounded">
-        <div class="card-body">
-          <div class="d-flex justify-content-between">
-            <h3 class="text-left" style="color: #ffffff">Promedio Diario</h3>
+<!-- Tarjeta del Hábito Específico -->
+<div class="col-md-4 mb-4">
+  <div class="card shadow-sm rounded">
+      <div class="card-body">
+          <h3 class="card-title mb-0 text-start" style="font-family: 'Anta'">  <!-- Añadido text-start -->
+              Hábito Específico
+          </h3>
+          <form method="GET" class="mt-3 text-center">  <!-- Añadido text-center para centrar el formulario -->
+              <select name="habit_id" id="habit_id" class="form-select">
+                  {% for habit in user_habits %}
+                  <option value="{{ habit.id }}" {% if habit.id|stringformat:"s" == request.GET.habit_id %}selected{% endif %}>
+                      {{ habit.name }}
+                  </option>
+                  {% endfor %}
+              </select>
+              <button type="submit" class="btn" style="background-color: #5f0293; color: white; margin-top: 10px;">Filtrar</button>
+          </form> 
+          <div style="margin: 20px 0;">
+              <canvas id="waterChart" class="w-100" style="height: 300px"></canvas>
           </div>
-          <canvas
-            id="allHabitsProgressChart"
-            class="w-100"
-            style="height: 280px"
-          ></canvas>
-          <div style=" display: flex; justify-content: space-around; margin-top: 10px;" >
+          <div class="text-start mt-3">
+              <p>Hoy <span class="float-end">{{ today_progress }}</span></p>
+              <hr />
+              <p>Mejor <span class="float-end">{{ best_progress }}</span></p>
+              <hr />
+              <p>Promedio <span class="float-end">{{ average_progress }}</span></p>
+              <hr />
+              <p>Progreso Final Esperado <span class="float-end">{{ expected_progress }}</span></p>
+              <hr />
           </div>
-        </div>
       </div>
+  </div>
+</div>
+
+    <!-- Tarjeta de Progreso Diario de Hábitos -->
+<div class="col-md-4 mb-4">
+  <div class="card shadow-sm rounded">
+    <div class="card-body">
+      <div class="d-flex justify-content-between">
+        <h3 class="text-left" style="color: #ffffff">Progreso Acumulado</h3>
+      </div>
+      <canvas
+        id="allHabitsProgressChart"
+        class="w-100"
+        style="height: 280px"
+      ></canvas>
+    </div>
+  </div>
+</div>
+
     </div>
 
   </div>
@@ -293,7 +293,7 @@ const data_stepsChart = {{data|safe}};
 var stepsChart = new Chart(ctxSteps, {
     type: 'line',
     data: {
-        labels: labels_stepsChart,
+        labels: labels_stepsChart,  // Las etiquetas del eje X
         datasets: [{
             label: 'Hábitos creados',
             data: data_stepsChart,
@@ -344,6 +344,7 @@ var stepsChart = new Chart(ctxSteps, {
                     color: 'rgba(0, 0, 0, 0.1)'
                 },
                 ticks: {
+                    color: 'white',  // Cambiar el color de los labels del eje X a blanco
                     font: {
                         family: 'Anta',
                         size: 12
@@ -376,122 +377,153 @@ var stepsChart = new Chart(ctxSteps, {
     }
 });
 
+
   // <!-- Gráfico del Hábito Específico -->
-    var ctxWater = document.getElementById('waterChart').getContext('2d');
-    var waterChart = new Chart(ctxWater, {
-        type: 'bar',
-        data: {
-            labels: {{ habit_labels|safe }},
-            datasets: [{
-                label: 'Progreso del Hábito',
-                data: {{ habit_data|safe }},
-                backgroundColor: '#FF464F',
+var ctxWater = document.getElementById('waterChart').getContext('2d');
+var waterChart = new Chart(ctxWater, {
+    type: 'bar',
+    data: {
+        labels: {{ habit_labels|safe }},
+        datasets: [
+            {
+                label: 'Progreso Total',
+                data: Array({{ habit_labels|length }}).fill({{ total_repetitions }}), // Array con el objetivo total
+                backgroundColor: '#FF464F' + '80', // Tono más claro para el progreso total
                 borderWidth: 1,
                 borderRadius: 10,
                 borderSkipped: false,
-                barThickness: 20
-            }]
+                barThickness: 15
+            },
+            {
+                label: 'Progreso Actual',
+                data: {{ habit_data|safe }},
+                backgroundColor: '#FF464F', // Tono más oscuro para el progreso actual
+                borderWidth: 1,
+                borderRadius: 10,
+                borderSkipped: false,
+                barThickness: 15 // Un poco más delgado para que se note el progreso total de fondo
+            }
+        ]
+    },
+    options: {
+        plugins: {
+            legend: {
+                display: false
+            }
         },
-        options: {
-            plugins: {
-                legend: {
+        scales: {
+            x: {
+                grid: {
                     display: false
+                },
+                ticks: {
+                    color: '#A9A9A9',
+                    font: {
+                        size: 14,
+                        family: 'Anta'
+                    }
                 }
             },
-            scales: {
-                x: {
-                    grid: {
-                        display: false
-                    },
-                    ticks: {
-                        color: '#A9A9A9',
-                        font: {
-                            size: 14,
-                            family: 'Anta'
-                        }
-                    }
+            y: {
+                beginAtZero: true,
+                max: {{ total_repetitions }},
+                ticks: {
+                    display: false
                 },
-                y: {
-                    beginAtZero: true,
-                    max: {{ total_repetitions }},
-                    ticks: {
-                        display: false
-                    },
-                    grid: {
-                        color: '#E0E0E0',
-                        borderDash: [5, 5],
-                        drawBorder: false
-                    }
+                grid: {
+                    color: '#E0E0E0',
+                    borderDash: [5, 5],
+                    drawBorder: false
                 }
             }
         }
-    });
+    }
+});
+
 
     // Define los colores para cada día de la semana
-    var dayColors = {
-        0: '#FF464F',  // Domingo
-        1: '#36A2EB',  // Lunes
-        2: '#FFCE56',  // Martes
-        3: '#4BC0C0',  // Miércoles
-        4: '#9966FF',  // Jueves
-        5: '#FF9F40',  // Viernes
-        6: '#FF6384'   // Sábado
-    };
+var dayColors = {
+    0: '#FF464F',  // Domingo
+    1: '#36A2EB',  // Lunes
+    2: '#FFCE56',  // Martes
+    3: '#4BC0C0',  // Miércoles
+    4: '#9966FF',  // Jueves
+    5: '#FF9F40',  // Viernes
+    6: '#FF6384'   // Sábado
+};
 
-    // Generar un array de colores basados en el día de la semana
-    var barColors = {{ all_habits_labels|safe }}.map(function(label) {
-        var date = new Date(label);
-        return dayColors[date.getDay()];  // Obtener el color basado en el día de la semana
-    });
+// Generar un array de colores basados en el día de la semana para el progreso actual
+var barColorsCurrent = {{ all_habits_labels|safe }}.map(function(label) {
+    var date = new Date(label);
+    return dayColors[date.getDay()];  // Obtener el color basado en el día de la semana
+});
 
-    var ctxAllHabits = document.getElementById('allHabitsProgressChart').getContext('2d');
-    var allHabitsProgressChart = new Chart(ctxAllHabits, {
-        type: 'bar',
-        data: {
-            labels: {{ all_habits_labels|safe }},  // Fechas de actualización
-            datasets: [{
-                label: 'Progreso Total de Hábitos',
-                data: {{ all_habits_data|safe }},  // Progreso total
-                backgroundColor: barColors,  // Colores dinámicos basados en el día de la semana
+// Generar un array de colores en un tono más claro para el progreso total
+var barColorsTotal = barColorsCurrent.map(function(color) {
+    // Crear un color más claro utilizando una transparencia
+    return color + '80';  // Agrega '80' al final del color para un 50% de transparencia
+});
+
+var ctxAllHabits = document.getElementById('allHabitsProgressChart').getContext('2d');
+var allHabitsProgressChart = new Chart(ctxAllHabits, {
+    type: 'bar',
+    data: {
+        labels: {{ all_habits_labels|safe }},  // Fechas de actualización
+        datasets: [
+            {
+                label: 'Progreso Total',
+                data: {{ all_habits_total_data|safe }},  // Progreso total
+                backgroundColor: barColorsTotal,  // Colores claros para el progreso total
                 borderWidth: 1,
                 borderRadius: 10,
                 borderSkipped: false,
-                barThickness: 20
-            }]
+                barThickness: 15
+            },
+            {
+                label: 'Progreso Actual',
+                data: {{ all_habits_current_data|safe }},  // Progreso actual
+                backgroundColor: barColorsCurrent,  // Colores dinámicos basados en el día de la semana
+                borderWidth: 1,
+                borderRadius: 10,
+                borderSkipped: false,
+                barThickness: 15  // Un grosor ligeramente menor para superponerlo
+            }
+        ]
+    },
+    options: {
+        plugins: {
+            legend: {
+                display: false  // Cambia a 'true' si quieres mostrar la leyenda
+            }
         },
-        options: {
-            plugins: {
-                legend: {
-                    display: false  // Puedes cambiar a 'true' si quieres mostrar la leyenda
+        scales: {
+            x: {
+                grid: {
+                    display: false  // Ocultar la rejilla en el eje X
+                },
+                ticks: {
+                    color: '#A9A9A9',  // Color de los labels (fechas)
+                    font: {
+                        size: 14,
+                        family: 'Anta'  // Mantener la misma fuente
+                    }
                 }
             },
-            scales: {
-                x: {
-                    grid: {
-                        display: false  // Ocultar la rejilla en el eje X
-                    },
-                    ticks: {
-                        color: '#A9A9A9',  // Color de los labels (fechas)
-                        font: {
-                            size: 14,
-                            family: 'Anta'  // Mantener la misma fuente
-                        }
-                    }
+            y: {
+                beginAtZero: true,  // Comenzar el eje Y desde cero
+                ticks: {
+                    display: false  // Ocultar los números en el eje Y
                 },
-                y: {
-                    beginAtZero: true,  // Comenzar el eje Y desde cero
-                    ticks: {
-                        display: false  // Ocultar los números en el eje Y
-                    },
-                    grid: {
-                        color: '#E0E0E0',  // Color de la rejilla en el eje Y
-                        borderDash: [5, 5],  // Línea discontinua para la rejilla
-                        drawBorder: false  // No mostrar el borde del eje
-                    }
+                grid: {
+                    color: '#E0E0E0',  // Color de la rejilla en el eje Y
+                    borderDash: [5, 5],  // Línea discontinua para la rejilla
+                    drawBorder: false  // No mostrar el borde del eje
                 }
             }
         }
-    });
+    }
+});
+
 
     });
 </script>
