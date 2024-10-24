@@ -80,7 +80,6 @@
 
   <!-- Nuevas Gráficas -->
   <div class="row">
-    
     <!-- Tarjeta del Hábito Específico -->
     <div class="col-md-4 mb-4">
         <div class="card shadow-sm rounded">
@@ -116,21 +115,19 @@
     </div>
     
     <!-- Tarjeta de Hábitos Creados -->
-    <div class="col-md-4 mb-4">
-      <div class="card shadow-sm rounded">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3 class="card-title mb-0">Hábitos Creados</h3>
-            <!-- Mostrar el total de hábitos creados -->
-            <span class="badge" style="background-color: #5f0293"
-              >{{ total_habits_created }}</span
-            >
-          </div>
-          <!-- Gráfico para mostrar los hábitos creados -->
-          <canvas id="stepsChart" class="w-100" style="height: 280px"></canvas>
-        </div>
+<div class="col-md-4 mb-4">
+  <div class="card shadow-sm rounded">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="card-title mb-0">Hábitos Creados</h3>
+        <span class="badge" style="background-color: #5f0293">{{ total_habits_created }}</span>
+      </div>
+      <div class="d-flex justify-content-center"> <!-- Contenedor para centrar la gráfica -->
+        <canvas id="stepsChart" class="w-100" style="height: 280px"></canvas>
       </div>
     </div>
+  </div>
+</div>
 
     <!-- Tarjeta de Promedio Diario -->
     <div class="col-md-4 mb-4">
@@ -138,63 +135,18 @@
         <div class="card-body">
           <div class="d-flex justify-content-between">
             <h3 class="text-left" style="color: #ffffff">Promedio Diario</h3>
-            <div class="text-right">
-              <h2>2h 20m</h2>
-              <p style="color: #8e44ad">+30m esta semana</p>
-            </div>
           </div>
           <canvas
-            id="averageChart"
+            id="allHabitsProgressChart"
             class="w-100"
             style="height: 280px"
           ></canvas>
-          <div
-            style="
-              display: flex;
-              justify-content: space-around;
-              margin-top: 10px;
-            "
-          >
-            <div style="color: #ff464f">
-              <span
-                style="
-                  display: inline-block;
-                  width: 10px;
-                  height: 10px;
-                  background-color: #ff464f;
-                  border-radius: 50%;
-                "
-              ></span>
-              2h
-            </div>
-            <div style="color: #1ed36f">
-              <span
-                style="
-                  display: inline-block;
-                  width: 10px;
-                  height: 10px;
-                  background-color: #1ed36f;
-                  border-radius: 50%;
-                "
-              ></span>
-              30m
-            </div>
-            <div style="color: #0061f2">
-              <span
-                style="
-                  display: inline-block;
-                  width: 10px;
-                  height: 10px;
-                  background-color: #0061f2;
-                  border-radius: 50%;
-                "
-              ></span>
-              5h
-            </div>
+          <div style=" display: flex; justify-content: space-around; margin-top: 10px;" >
           </div>
         </div>
       </div>
     </div>
+
   </div>
 
 <!-- Librería de Chart.js -->
@@ -319,108 +271,112 @@ new Chart(ctxByCategory, {
 
   // Nuevas Gráficas
   document.addEventListener('DOMContentLoaded', function () {
-      // Obtener los datos del backend
 
-      var waterData = JSON.parse('{{ water_data|escapejs }}');
       var dailyAverageData = JSON.parse('{{ daily_average_data|escapejs }}');
-      var grafico1Data = JSON.parse('{{ grafico1_data|escapejs }}');
-      var grafico2Data = JSON.parse('{{ grafico2_data|escapejs }}');
-      var grafico3Data = JSON.parse('{{ grafico3_data|escapejs }}');
-      var grafico4Data = JSON.parse('{{ grafico4_data|escapejs }}');
 
       // Gráfico de hábitos creados
-      var ctxSteps = document.getElementById('stepsChart').getContext('2d');
+  var ctxSteps = document.getElementById('stepsChart').getContext('2d');
 
-      var gradientSteps = ctxSteps.createLinearGradient(0, 0, 0, 400);
-      gradientSteps.addColorStop(0, 'rgba(255, 99, 132, 1)');
-      gradientSteps.addColorStop(0.1, 'rgba(255, 99, 132, 0.9)');
-      gradientSteps.addColorStop(0.2, 'rgba(255, 99, 132, 0.7)');
-      gradientSteps.addColorStop(0.3, 'rgba(255, 99, 132, 0.5)');
-      gradientSteps.addColorStop(0.5, 'rgba(255, 99, 132, 0.3)');
-      gradientSteps.addColorStop(0.7, 'rgba(255, 99, 132, 0.2)');
-      gradientSteps.addColorStop(0.9, 'rgba(255, 99, 132, 0.1)');
-      gradientSteps.addColorStop(1, 'rgba(255, 99, 132, 0)');
+var gradientSteps = ctxSteps.createLinearGradient(0, 0, 0, 400);
+gradientSteps.addColorStop(0, 'rgba(255, 99, 132, 1)');
+gradientSteps.addColorStop(0.1, 'rgba(255, 99, 132, 0.9)');
+gradientSteps.addColorStop(0.2, 'rgba(255, 99, 132, 0.7)');
+gradientSteps.addColorStop(0.3, 'rgba(255, 99, 132, 0.5)');
+gradientSteps.addColorStop(0.5, 'rgba(255, 99, 132, 0.3)');
+gradientSteps.addColorStop(0.7, 'rgba(255, 99, 132, 0.2)');
+gradientSteps.addColorStop(0.9, 'rgba(255, 99, 132, 0.1)');
+gradientSteps.addColorStop(1, 'rgba(255, 99, 132, 0)');
 
-    const labels_stepsChart = {{labels|safe}};
-    const data_stepsChart = {{data|safe}};
+const labels_stepsChart = {{labels|safe}};
+const data_stepsChart = {{data|safe}};
 
-  var stepsChart = new Chart(ctxSteps, {
-      type: 'line',
-      data: {
-          labels: labels_stepsChart,
-          datasets: [{
-              label: 'Hábitos creados',
-              data: data_stepsChart,
-              borderColor: '#FF464F',
-              borderWidth: 2,
-              fill: true,
-              backgroundColor: gradientSteps,
-              pointRadius: 0,
-              pointHoverRadius: 8,
-              pointHoverBorderColor: '#FF464F',
-              pointHoverBackgroundColor: 'white'
-          }]
-      },
-      options: {
-          elements: {
-              point: {
-                  radius: function (context) {
-                      return context.dataIndex === 2 ? 10 : 0;
-                  },
-                  backgroundColor: function (context) {
-                      return context.dataIndex === 2 ? '#FF464F' : 'rgba(255, 99, 132, 0)';
-                  },
-                  borderColor: function (context) {
-                      return context.dataIndex === 2 ? '#FFFFFF' : '#FF464F';
-                  },
-                  borderWidth: 5,
-              },
-              line: {
-                  tension: 0.4
-              }
-          },
-          plugins: {
-              legend: {
-                  display: false
-              },
-              tooltip: {
-                  callbacks: {
-                      label: function (tooltipItem) {
-                          return 'Hábitos: ' + tooltipItem.raw;
-                      }
-                  }
-              }
-          },
-          scales: {
-              x: {
-                  grid: {
-                      borderDash: [5, 5],
-                      color: 'rgba(0, 0, 0, 0.1)'
-                  },
-                  ticks: {
-                      font: {
-                          family: 'Anta',
-                          size: 12
-                      }
-                  }
-              },
-              y: {
-                  display: false
-              }
-          },
-          hover: {
-              mode: 'nearest',
-              intersect: true
-          },
-          interaction: {
-              mode: 'nearest',
-              axis: 'x',
-              intersect: false
-          }
-      }
-  });
+var stepsChart = new Chart(ctxSteps, {
+    type: 'line',
+    data: {
+        labels: labels_stepsChart,
+        datasets: [{
+            label: 'Hábitos creados',
+            data: data_stepsChart,
+            borderColor: '#FF464F',
+            borderWidth: 2,
+            fill: true,
+            backgroundColor: gradientSteps,
+            pointRadius: 0,
+            pointHoverRadius: 8,
+            pointHoverBorderColor: '#FF464F',
+            pointHoverBackgroundColor: 'white'
+        }]
+    },
+    options: {
+        elements: {
+            point: {
+                radius: function (context) {
+                    return context.dataIndex === 2 ? 10 : 0;
+                },
+                backgroundColor: function (context) {
+                    return context.dataIndex === 2 ? '#FF464F' : 'rgba(255, 99, 132, 0)';
+                },
+                borderColor: function (context) {
+                    return context.dataIndex === 2 ? '#FFFFFF' : '#FF464F';
+                },
+                borderWidth: 5,
+            },
+            line: {
+                tension: 0.4
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                callbacks: {
+                    label: function (tooltipItem) {
+                        return 'Hábitos: ' + tooltipItem.raw;
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                grid: {
+                    borderDash: [5, 5],
+                    color: 'rgba(0, 0, 0, 0.1)'
+                },
+                ticks: {
+                    font: {
+                        family: 'Anta',
+                        size: 12
+                    },
+                    maxRotation: 75, // Rotar las etiquetas
+                    minRotation: 75
+                }
+            },
+            y: {
+                display: false
+            }
+        },
+        layout: {
+            padding: {
+                left: 10,
+                right: 10,
+                top: 10,
+                bottom: 10
+            }
+        },
+        hover: {
+            mode: 'nearest',
+            intersect: true
+        },
+        interaction: {
+            mode: 'nearest',
+            axis: 'x',
+            intersect: false
+        }
+    }
+});
 
-  <!-- Gráfico del Hábito Específico -->
+  // <!-- Gráfico del Hábito Específico -->
     var ctxWater = document.getElementById('waterChart').getContext('2d');
     var waterChart = new Chart(ctxWater, {
         type: 'bar',
@@ -471,77 +427,71 @@ new Chart(ctxByCategory, {
         }
     });
 
-  // Gráfico de Promedio Diario
-  var ctxAverage = document.getElementById('averageChart').getContext('2d');
-  var averageChart = new Chart(ctxAverage, {
-      type: 'bar',
-      data: {
-          labels: ['L', 'M', 'M', 'J', 'V', 'S', 'D'],
-          datasets: [
-              {
-                  label: '5h',
-                  data: dailyAverageData['5h'],
-                  backgroundColor: '#0061F2',
-                  borderWidth: 1,
-                  barThickness: 20,
-                  maxBarThickness: 25
-              },
-              {
-                  label: '30m',
-                  data: dailyAverageData['30m'],
-                  backgroundColor: '#1ED36F',
-                  borderWidth: 1,
-                  barThickness: 20,
-                  maxBarThickness: 25
-              },
-              {
-                  label: '2h',
-                  data: dailyAverageData['2h'],
-                  backgroundColor: '#FF464F',
-                  borderWidth: 1,
-                  borderRadius: {
-                      topLeft: 10,
-                      topRight: 10
-                  },
-                  barThickness: 20,
-                  maxBarThickness: 25
-              }
-          ]
-      },
-      options: {
-          plugins: {
-              legend: {
-                  display: false
-              }
-          },
-          scales: {
-              x: {
-                  stacked: true,
-                  grid: {
-                      display: false
-                  },
-                  ticks: {
-                      color: '#A9A9A9',
-                      font: {
-                          family: 'Anta',
-                          size: 14
-                      }
-                  }
-              },
-              y: {
-                  stacked: true,
-                  grid: {
-                      color: '#E0E0E0',
-                      borderDash: [5, 5],
-                      drawBorder: false
-                  },
-                  ticks: {
-                      display: false
-                  }
-              }
-          }
-      }
-  });
+    // Define los colores para cada día de la semana
+    var dayColors = {
+        0: '#FF464F',  // Domingo
+        1: '#36A2EB',  // Lunes
+        2: '#FFCE56',  // Martes
+        3: '#4BC0C0',  // Miércoles
+        4: '#9966FF',  // Jueves
+        5: '#FF9F40',  // Viernes
+        6: '#FF6384'   // Sábado
+    };
+
+    // Generar un array de colores basados en el día de la semana
+    var barColors = {{ all_habits_labels|safe }}.map(function(label) {
+        var date = new Date(label);
+        return dayColors[date.getDay()];  // Obtener el color basado en el día de la semana
+    });
+
+    var ctxAllHabits = document.getElementById('allHabitsProgressChart').getContext('2d');
+    var allHabitsProgressChart = new Chart(ctxAllHabits, {
+        type: 'bar',
+        data: {
+            labels: {{ all_habits_labels|safe }},  // Fechas de actualización
+            datasets: [{
+                label: 'Progreso Total de Hábitos',
+                data: {{ all_habits_data|safe }},  // Progreso total
+                backgroundColor: barColors,  // Colores dinámicos basados en el día de la semana
+                borderWidth: 1,
+                borderRadius: 10,
+                borderSkipped: false,
+                barThickness: 20
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: false  // Puedes cambiar a 'true' si quieres mostrar la leyenda
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false  // Ocultar la rejilla en el eje X
+                    },
+                    ticks: {
+                        color: '#A9A9A9',  // Color de los labels (fechas)
+                        font: {
+                            size: 14,
+                            family: 'Anta'  // Mantener la misma fuente
+                        }
+                    }
+                },
+                y: {
+                    beginAtZero: true,  // Comenzar el eje Y desde cero
+                    ticks: {
+                        display: false  // Ocultar los números en el eje Y
+                    },
+                    grid: {
+                        color: '#E0E0E0',  // Color de la rejilla en el eje Y
+                        borderDash: [5, 5],  // Línea discontinua para la rejilla
+                        drawBorder: false  // No mostrar el borde del eje
+                    }
+                }
+            }
+        }
+    });
 
     });
 </script>

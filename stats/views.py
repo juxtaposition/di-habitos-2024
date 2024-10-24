@@ -134,9 +134,38 @@ def estadisticas(request):
         "30m": [0.5, 0.3, 0.4, 0.6, 0.4, 0.6, 1.5],
         "2h": [1, 1.5, 1, 2, 2, 2.5, 2.2],
     }
+# Obtener el progreso acumulado de todos los hábitos día a día
+    habits_progress_over_time = (
+        Habit.objects.filter(user_id=usuario)
+        .values('created_at__date')  # Agrupar por fecha de creación
+        .annotate(total_progress=Sum('current_progress'))  # Sumar el progreso diario
+        .order_by('created_at__date')  # Ordenar por fecha
+    )
 
-    # Contexto para el template
+    # Preparar etiquetas (fechas) y datos (progreso) para la nueva gráfica
+    all_habits_labels = [entry['created_at__date'].strftime('%Y-%m-%d') for entry in habits_progress_over_time]
+    all_habits_data = [entry['total_progress'] for entry in habits_progress_over_time]
+
+    # Si solo hay un día en los datos, duplicar para que la gráfica no se vea mal
+    if len(all_habits_labels) == 1:
+        all_habits_labels.append(all_habits_labels[0])  # Duplicar la misma fecha
+        all_habits_data.append(all_habits_data[0])  # Duplicar el mismo valor
+
+    # Obtener los datos de progreso de todos los hábitos basados en la fecha de actualización
+    all_habits_progress_by_date = (
+        Habit.objects.filter(user_id=usuario)
+        .values("updated_at__date")  # Agrupar por la fecha de actualización
+        .annotate(total_progress=Sum("current_progress"))  # Sumar el progreso actual para cada fecha
+        .order_by("updated_at__date")
+    )
+
+    # Preparar los datos para la gráfica
+    all_habits_labels = [entry["updated_at__date"].strftime("%Y-%m-%d") for entry in all_habits_progress_by_date]
+    all_habits_data = [entry["total_progress"] for entry in all_habits_progress_by_date]
+
+    # Agregar esta nueva gráfica al contexto
     context = {
+        # Mantener todas las variables del contexto original
         "byCategory": json.dumps(allCategories),
         "byFrequency": json.dumps(allFrequencies),
         "categories": categories,
@@ -154,6 +183,10 @@ def estadisticas(request):
         "habit_labels": habit_labels,
         "habit_data": habit_data,
         "expected_progress": expected_progress, 
+        
+        # Nuevas variables para la gráfica de progreso de todos los hábitos
+        "all_habits_labels": all_habits_labels,  # Etiquetas para las fechas
+        "all_habits_data": all_habits_data,  # Datos de progreso
     }
 
     return render(request, "stats/index.html", context)
