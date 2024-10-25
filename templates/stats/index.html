@@ -50,9 +50,9 @@
       <div class="card shadow-sm rounded">
         <div class="card-body">
           <h3 class="card-title mb-0 text-start" style="font-family: 'Anta'">
-            Frecuencias más usadas
+            Categorías más creadas
           </h3>
-          <canvas id="habitRadarChart" class="w-100" style="height: 200px"></canvas>
+          <canvas id="byCategory" class="w-100" style="height: 200px"></canvas>
         </div>
       </div>
     </div>
@@ -60,9 +60,9 @@
       <div class="card shadow-sm rounded">
         <div class="card-body">
           <h3 class="card-title mb-0 text-start" style="font-family: 'Anta'">
-            Categorías más creadas
+            Frecuencias más usadas
           </h3>
-          <canvas id="byCategory" class="w-100" style="height: 200px"></canvas>
+          <canvas id="habitRadarChart" class="w-100" style="height: 200px"></canvas>
         </div>
       </div>
     </div>
@@ -134,7 +134,7 @@
   <div class="card shadow-sm rounded">
     <div class="card-body">
       <div class="d-flex justify-content-between">
-        <h3 class="text-left" style="color: #ffffff">Progreso Acumulado</h3>
+        <h3 class="text-left" style="color: #000000">Progreso Acumulado</h3>
       </div>
       <canvas
         id="allHabitsProgressChart"
@@ -188,124 +188,175 @@
     }
 });
 
-// Gráfico de categorías
 var ctx = document.getElementById('habitRadarChart').getContext('2d');
-    var habitRadarChart = new Chart(ctx, {
-        type: 'radar',  // Tipo de gráfico: 'radar'
-        data: {
-            labels: {{ habit_names|safe }},  // Los nombres de los hábitos
-            datasets: [{
-                label: 'Repeticiones de hábitos',
-                data: {{ habit_repetitions|safe }},  // Las repeticiones de cada hábito
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',  // Color de fondo semitransparente
-                borderColor: 'rgba(54, 162, 235, 1)',  // Color de la línea
-                borderWidth: 2,  // Grosor de la línea
-                pointBackgroundColor: 'rgba(54, 162, 235, 1)',  // Color de los puntos
-                pointBorderColor: '#fff',  // Borde de los puntos
-                pointHoverBackgroundColor: '#fff',  // Color de los puntos al hacer hover
-                pointHoverBorderColor: 'rgba(54, 162, 235, 1)',  // Borde de los puntos al hacer hover
-            }]
-        },
-        options: {
-            responsive: true,
-            elements: {
-                line: {
-                    tension: 0.3  // Curvatura de las líneas (valor entre 0 y 1, 0 es recto)
-                }
-            },
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'top',  // Posición de la leyenda
-                },
-            },
-            scales: {
-                r: {
-                    angleLines: {
-                        display: true  // Mostrar las líneas de los ángulos
-                    },
-                    suggestedMin: 0,  // El mínimo sugerido para el valor en el gráfico
-                    suggestedMax: Math.max(...{{ habit_repetitions|safe }}) + 2  // Ajustar el máximo según las repeticiones
-                }
+var habitRadarChart = new Chart(ctx, {
+    type: 'radar',  // Tipo de gráfico: 'radar'
+    data: {
+        labels: {{ habit_names|safe }},  // Los nombres de los hábitos
+        datasets: [{
+            label: 'Repeticiones de hábitos',
+            data: {{ habit_repetitions|safe }},  // Las repeticiones de cada hábito
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',  // Color de fondo semitransparente
+            borderColor: 'rgba(54, 162, 235, 1)',  // Color de la línea
+            borderWidth: 2,  // Grosor de la línea
+            pointBackgroundColor: 'rgba(54, 162, 235, 1)',  // Color de los puntos
+            pointBorderColor: '#fff',  // Borde de los puntos
+            pointHoverBackgroundColor: '#fff',  // Color de los puntos al hacer hover
+            pointHoverBorderColor: 'rgba(54, 162, 235, 1)',  // Borde de los puntos al hacer hover
+        }]
+    },
+    options: {
+        responsive: true,
+        elements: {
+            line: {
+                tension: 0.3  // Curvatura de las líneas (valor entre 0 y 1, 0 es recto)
             }
-        }
-    });
-
-
-  // Gráfico de frecuencias
-  const ctxByFrequency = document.getElementById('byFrequency').getContext('2d');
-  new Chart(ctxByFrequency, {
-      type: 'bar',
-      data: {
-          labels: frequenciesName,
-          datasets: [{
-              label: "Frecuencias",
-              data: frequenciesValue,
-              backgroundColor: bgcolors,
-              borderColor: '#DAF7A6',
-              borderWidth: 1
-          }]
-      },
-      options: {
-          scales: {
-              y: {
-                  beginAtZero: true
-              }
-          },
-          plugins: {
-              tooltip: {
-                  callbacks: {
-                      label: function (args) {
-                          return `${(args.raw / totalSum * 100).toFixed(2)}% del total`;
-                      }
-                  }
-              }
-          }
-      }
-  });
-
-  var ctx = document.getElementById('completionChart').getContext('2d');
-    var completionChart = new Chart(ctx, {
-      type: 'polarArea',  // Tipo de gráfico: 'polarArea'
-        data: {
-            labels: {{ frequency_labels|safe }},  // Las etiquetas de las frecuencias
-            datasets: [{
-                label: 'Frecuencia de hábitos',
-                data: {{ frequency_data|safe }},  // La cantidad de hábitos para cada frecuencia
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.6)',
-                    'rgba(54, 162, 235, 0.6)',
-                    'rgba(255, 206, 86, 0.6)',
-                    'rgba(75, 192, 192, 0.6)',
-                    'rgba(153, 102, 255, 0.6)',
-                    'rgba(255, 159, 64, 0.6)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1
-            }]
         },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'right',  // Leyenda posicionada a la derecha
-                },
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top',  // Posición de la leyenda
+                labels: {
+                    color: '#A9A9A9',
+                    font: {
+                        family: 'Anta',
+                        size: 14
+                    }
+                }
             },
-            scale: {
+        },
+        scales: {
+            r: {
+                angleLines: {
+                    display: true  // Mostrar las líneas de los ángulos
+                },
+                pointLabels: {
+                    color: '#A9A9A9',
+                    font: {
+                        family: 'Anta',
+                        size: 14
+                    }
+                },
                 ticks: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    color: '#000000',
+                    font: {
+                        family: 'Anta',
+                        size: 14
+                    }
+                },
+                suggestedMin: 0,  // El mínimo sugerido para el valor en el gráfico
+                suggestedMax: Math.max(...{{ habit_repetitions|safe }}) + 2  // Ajustar el máximo según las repeticiones
+            }
+        }
+    }
+});
+
+
+
+// Gráfico de frecuencias
+var ctxByCategory = document.getElementById('byCategory').getContext('2d');
+
+var byCategoryChart = new Chart(ctxByCategory, {
+    type: 'doughnut',  // Tipo de gráfico: 'doughnut'
+    data: {
+        labels: categoriesName,  // Etiquetas de las categorías
+        datasets: [{
+            data: categoriesValue,  // Valores para cada categoría
+            backgroundColor: bgcolors,
+            borderColor: '#DAF7A6',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: true,
+                labels: {
+                    color: '#A9A9A9',
+                    font: {
+                        family: 'Anta',
+                        size: 14
+                    }
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function (args) {
+                        const percentage = (args.raw / totalSum * 100).toFixed(2);
+                        return `${percentage}% del total`;
+                    }
                 }
             }
         }
-    });
+    }
+});
+
+
+var ctx = document.getElementById('completionChart').getContext('2d');
+var completionChart = new Chart(ctx, {
+    type: 'polarArea',  // Tipo de gráfico: 'polarArea'
+    data: {
+        labels: {{ frequency_labels|safe }},  // Las etiquetas de las frecuencias
+        datasets: [{
+            label: 'Frecuencia de hábitos',
+            data: {{ frequency_data|safe }},  // La cantidad de hábitos para cada frecuencia
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.6)',
+                'rgba(54, 162, 235, 0.6)',
+                'rgba(255, 206, 86, 0.6)',
+                'rgba(75, 192, 192, 0.6)',
+                'rgba(153, 102, 255, 0.6)',
+                'rgba(255, 159, 64, 0.6)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: true,
+                // position: 'right',  // Leyenda posicionada a la derecha
+                labels: {
+                    color: '#A9A9A9',
+                    font: {
+                        family: 'Anta',
+                        size: 14
+                    }
+                }
+            },
+        },
+        scales: {
+            r: {
+                ticks: {
+                    beginAtZero: true,
+                    color: '#000000',
+                    font: {
+                        family: 'Anta',
+                        size: 14
+                    }
+                },
+                pointLabels: {
+                    color: '#A9A9A9',
+                    font: {
+                        family: 'Anta',
+                        size: 14
+                    }
+                }
+            }
+        }
+    }
+});
 
 
 
@@ -382,10 +433,10 @@ var stepsChart = new Chart(ctxSteps, {
                     color: 'rgba(0, 0, 0, 0.1)'
                 },
                 ticks: {
-                    color: 'white',  // Cambiar el color de los labels del eje X a blanco
+                    color: '#A9A9A9', // Cambiar el color de los labels del eje X a blanco
                     font: {
                         family: 'Anta',
-                        size: 12
+                        size: 14
                     },
                     maxRotation: 75, // Rotar las etiquetas
                     minRotation: 75
@@ -540,11 +591,13 @@ var allHabitsProgressChart = new Chart(ctxAllHabits, {
                     display: false  // Ocultar la rejilla en el eje X
                 },
                 ticks: {
-                    color: '#A9A9A9',  // Color de los labels (fechas)
+                    color: '#A9A9A9', // Cambiar el color de los labels del eje X a blanco
                     font: {
-                        size: 14,
-                        family: 'Anta'  // Mantener la misma fuente
-                    }
+                        family: 'Anta',
+                        size: 14
+                    },
+                    maxRotation: 75, // Rotar las etiquetas
+                    minRotation: 75
                 }
             },
             y: {
