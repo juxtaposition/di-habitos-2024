@@ -119,12 +119,6 @@ def estadisticas(request):
     habit_data = progress_data
     habit_labels = progress_labels
 
-    daily_average_data = {
-        "5h": [1, 1, 2, 2, 3, 3, 3],
-        "30m": [0.5, 0.3, 0.4, 0.6, 0.4, 0.6, 1.5],
-        "2h": [1, 1.5, 1, 2, 2, 2.5, 2.2],
-    }
-
     # Obtener el progreso acumulado de todos los hábitos día a día
     habits_progress_over_time = (
         Habit.objects.filter(user_id=usuario)
@@ -154,6 +148,40 @@ def estadisticas(request):
     all_habits_labels = [entry["created_at__date"].strftime("%Y-%m-%d") for entry in all_habits_progress_by_date]
     all_habits_current_data = [entry["total_progress"] for entry in all_habits_progress_by_date]
     all_habits_total_data = [entry["total_repetitions"] for entry in all_habits_progress_by_date]
+    
+    # Obtener el progreso de hábitos completados en porcentaje a lo largo del tiempo
+    habits_completion_over_time = (
+        Habit.objects.filter(user_id=usuario)
+        .values('created_at__date')
+        .annotate(
+            total_progress=Sum('current_progress'),
+            total_repetitions=Sum('repetitions')
+        )
+        .order_by('created_at__date')
+    )
+
+    # Preparar las etiquetas (fechas) y datos (porcentaje de hábitos completados)
+    completion_labels = [entry['created_at__date'].strftime('%Y-%m-%d') for entry in habits_completion_over_time]
+    completion_percentage_data = [
+        (entry['total_progress'] / entry['total_repetitions']) * 100 if entry['total_repetitions'] > 0 else 0
+        for entry in habits_completion_over_time
+    ]
+
+    # Asegurarse de que haya al menos un valor en los datos para evitar errores en la gráfica
+    if len(completion_labels) == 1:
+        completion_labels.append(completion_labels[0])
+        completion_percentage_data.append(completion_percentage_data[0])
+
+    # Contar la cantidad de hábitos por frecuencia
+    frequency_counter = dict(Counter(freq_names))
+    frequency_labels = list(frequency_counter.keys())  # Nombres de las frecuencias (diaria, semanal, etc.)
+    frequency_data = list(frequency_counter.values())  # Número de hábitos en cada frecuencia
+
+    habits = Habit.objects.filter(user_id=usuario)
+
+    # Extraer los nombres de los hábitos y sus repeticiones
+    habit_names = habits.values_list('name', flat=True)
+    habit_repetitions = habits.values_list('repetitions', flat=True)
 
     context = {
         "byCategory": json.dumps(allCategories),
@@ -162,7 +190,6 @@ def estadisticas(request):
         "total_habits_created": total_habits_created,
         "labels": labels, 
         "data": data,
-        "daily_average_data": json.dumps(daily_average_data),
         "today_progress": today_progress,
         "best_progress": best_progress,
         "average_progress": average_progress,
@@ -178,6 +205,18 @@ def estadisticas(request):
         "all_habits_labels": all_habits_labels,
         "all_habits_current_data": all_habits_current_data,
         "all_habits_total_data": all_habits_total_data,
+        
+        
+        "completion_labels": completion_labels,
+        "completion_percentage_data": completion_percentage_data,
+        
+        
+        "frequency_counter": json.dumps(frequency_counter),
+        "frequency_labels": json.dumps(frequency_labels),
+        "frequency_data": json.dumps(frequency_data),
+        
+        "habit_names": json.dumps(list(habit_names)),
+        "habit_repetitions": json.dumps(list(habit_repetitions)),
     }
 
     return render(request, "stats/index.html", context)

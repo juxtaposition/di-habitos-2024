@@ -52,7 +52,7 @@
           <h3 class="card-title mb-0 text-start" style="font-family: 'Anta'">
             Frecuencias más usadas
           </h3>
-          <canvas id="byFrequency" class="w-100" style="height: 200px"></canvas>
+          <canvas id="habitRadarChart" class="w-100" style="height: 200px"></canvas>
         </div>
       </div>
     </div>
@@ -70,9 +70,9 @@
       <div class="card shadow-sm rounded">
         <div class="card-body">
           <h3 class="card-title mb-0 text-start" style="font-family: 'Anta'">
-            Evolución de puntos
+            Frecuencias más usadas
           </h3>
-          <canvas id="points" class="w-100" style="height: 200px"></canvas>
+          <canvas id="completionChart" class="w-100" style="height: 200px"></canvas>
         </div>
       </div>
     </div>
@@ -159,6 +159,8 @@
   const categoriesName = Object.keys(categories);
   const categoriesValue = Object.values(categories);
 
+  
+
   // Datos dinámicos para las frecuencias
   const frequencies = {{ byFrequency | safe }};
   const frequenciesName = Object.keys(frequencies);
@@ -187,31 +189,47 @@
 });
 
 // Gráfico de categorías
-const ctxByCategory = document.getElementById('byCategory').getContext('2d');
-new Chart(ctxByCategory, {
-    type: 'doughnut',
-    data: {
-        labels: categoriesName,
-        datasets: [{
-            data: categoriesValue,
-            backgroundColor: bgcolors,
-            borderColor: '#DAF7A6',
-            borderWidth: 1
-        }]
-    },
-    options: {
-        plugins: {
-            tooltip: {
-                callbacks: {
-                    label: function (args) {
-                        const percentage = (args.raw / totalSum * 100).toFixed(2);
-                        return `${percentage}% del total`;
-                    }
+var ctx = document.getElementById('habitRadarChart').getContext('2d');
+    var habitRadarChart = new Chart(ctx, {
+        type: 'radar',  // Tipo de gráfico: 'radar'
+        data: {
+            labels: {{ habit_names|safe }},  // Los nombres de los hábitos
+            datasets: [{
+                label: 'Repeticiones de hábitos',
+                data: {{ habit_repetitions|safe }},  // Las repeticiones de cada hábito
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',  // Color de fondo semitransparente
+                borderColor: 'rgba(54, 162, 235, 1)',  // Color de la línea
+                borderWidth: 2,  // Grosor de la línea
+                pointBackgroundColor: 'rgba(54, 162, 235, 1)',  // Color de los puntos
+                pointBorderColor: '#fff',  // Borde de los puntos
+                pointHoverBackgroundColor: '#fff',  // Color de los puntos al hacer hover
+                pointHoverBorderColor: 'rgba(54, 162, 235, 1)',  // Borde de los puntos al hacer hover
+            }]
+        },
+        options: {
+            responsive: true,
+            elements: {
+                line: {
+                    tension: 0.3  // Curvatura de las líneas (valor entre 0 y 1, 0 es recto)
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',  // Posición de la leyenda
+                },
+            },
+            scales: {
+                r: {
+                    angleLines: {
+                        display: true  // Mostrar las líneas de los ángulos
+                    },
+                    suggestedMin: 0,  // El mínimo sugerido para el valor en el gráfico
+                    suggestedMax: Math.max(...{{ habit_repetitions|safe }}) + 2  // Ajustar el máximo según las repeticiones
                 }
             }
         }
-    }
-});
+    });
 
 
   // Gráfico de frecuencias
@@ -246,33 +264,53 @@ new Chart(ctxByCategory, {
       }
   });
 
-  // Gráfico de historial de puntos (línea)
-  const ctxPoints = document.getElementById('points').getContext('2d');
-  new Chart(ctxPoints, {
-      type: 'line',
-      data: {
-          labels: ['2024-10-01', '2024-10-02', '2024-10-03', '2024-10-04', '2024-10-05', '2024-10-06', '2024-10-07'],
-          datasets: [{
-              label: 'Historial',
-              data: [10, 15, 20, 25, 30, 28, 35],
-              borderColor: '#DAF7A6',
-              backgroundColor: 'rgba(218, 247, 166, 0.2)',
-              pointStyle: 'circle',
-              pointRadius: 5,
-              pointHoverRadius: 8
-          }]
-      },
-      options: {
-          responsive: true,
-          plugins: {
-          }
-      }
-  });
+  var ctx = document.getElementById('completionChart').getContext('2d');
+    var completionChart = new Chart(ctx, {
+      type: 'polarArea',  // Tipo de gráfico: 'polarArea'
+        data: {
+            labels: {{ frequency_labels|safe }},  // Las etiquetas de las frecuencias
+            datasets: [{
+                label: 'Frecuencia de hábitos',
+                data: {{ frequency_data|safe }},  // La cantidad de hábitos para cada frecuencia
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(153, 102, 255, 0.6)',
+                    'rgba(255, 159, 64, 0.6)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'right',  // Leyenda posicionada a la derecha
+                },
+            },
+            scale: {
+                ticks: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+
 
   // Nuevas Gráficas
   document.addEventListener('DOMContentLoaded', function () {
-
-      var dailyAverageData = JSON.parse('{{ daily_average_data|escapejs }}');
 
       // Gráfico de hábitos creados
   var ctxSteps = document.getElementById('stepsChart').getContext('2d');
@@ -525,7 +563,7 @@ var allHabitsProgressChart = new Chart(ctxAllHabits, {
 });
 
 
-    });
+  });
 </script>
 
 {% endblock %}
