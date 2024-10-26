@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from habit.models import Habit, Category
 from django.utils.dateparse import parse_date
-from django.db.models import Sum, Count, Q, Max, Avg
+from django.db.models import Sum, Count, Max, Avg
 import json
 from collections import Counter
 from datetime import datetime
@@ -11,33 +11,48 @@ from datetime import datetime
 @login_required
 def estadisticas(request):
     usuario = request.user
+    context = {}
     categories = Category.objects.all()
+    
+    # Obtener parámetros de filtro de la URL
     start_date = request.GET.get("start_date")
     end_date = request.GET.get("end_date")
     category_id = request.GET.get("category")
     frequency = request.GET.get("frequency")
     habit_id = request.GET.get("habit_id")
 
+    # Obtener los hábitos del usuario
     habits = Habit.objects.filter(user_id=usuario)
 
-    # Filtrar por rango de fechas si se proporcionan ambas fechas
+    # Variable para comprobar si se aplicaron filtros
+    filters_applied = False
+
+    # Aplicar filtros de Fecha Inicio y Fecha Fin si están presentes
     if start_date and end_date:
         try:
             start_date_parsed = parse_date(start_date)
             end_date_parsed = parse_date(end_date)
             if start_date_parsed and end_date_parsed:
                 habits = habits.filter(created_at__date__gte=start_date_parsed, created_at__date__lte=end_date_parsed)
+                filters_applied = True
         except ValueError:
-            context['error'] = "Formato de fecha inválido."
+            context['error'] = "Las fechas tienen un formato inválido."
 
-    # Filtrar por categoría si se proporciona
+    # Aplicar filtro de categoría si está presente
     if category_id:
         habits = habits.filter(category_id=category_id)
+        filters_applied = True
 
-    # Filtrar por frecuencia si se especifica
+    # Filtrar por frecuencia si está presente
     if frequency:
         habits = habits.filter(frequency=frequency)
+        filters_applied = True
 
+    # Mostrar mensaje si se aplicaron filtros y no se encontraron resultados
+    if filters_applied and not habits.exists():
+        context['no_data_message'] = "No se encontraron datos para los filtros aplicados."
+
+    # Contar categorías y frecuencias
     category_names = habits.values_list("category__name", flat=True)
     freq_names = habits.values_list("frequency", flat=True)
     allCategories = dict(Counter(category_names))
@@ -57,7 +72,7 @@ def estadisticas(request):
         labels.append(labels[0])
         data.append(data[0])
 
-    # Variables para progreso
+    # Variables de progreso para un hábito específico
     progress_labels = []
     progress_data = []
     total_repetitions = 0
@@ -66,6 +81,7 @@ def estadisticas(request):
     best_progress = 0
     average_progress = 0
 
+    # Datos específicos de un hábito
     if habit_id:
         try:
             habit = Habit.objects.get(id=habit_id, user_id=usuario)
@@ -85,6 +101,7 @@ def estadisticas(request):
                 progress_data = [entry["current_progress"] for entry in progress_by_date]
                 total_repetitions = habit.repetitions
 
+            # Calcular los progresos hoy, mejor y promedio solo para el hábito específico
             today_progress = Habit.objects.filter(
                 user_id=usuario,
                 created_at__date=datetime.now().date(),
@@ -112,7 +129,7 @@ def estadisticas(request):
     if len(all_habits_labels) == 1:
         all_habits_labels.append(all_habits_labels[0])
         all_habits_data.append(all_habits_data[0])
-
+        
     # Progreso de todos los hábitos por fecha de actualización
     all_habits_progress_by_date = (
         habits
@@ -137,6 +154,7 @@ def estadisticas(request):
         completion_labels.append(completion_labels[0])
         completion_percentage_data.append(completion_percentage_data[0])
 
+    # Datos de frecuencia para gráfico polar
     frequency_counter = dict(Counter(freq_names))
     frequency_labels = list(frequency_counter.keys())
     frequency_data = list(frequency_counter.values())
@@ -144,7 +162,8 @@ def estadisticas(request):
     habit_names = habits.values_list('name', flat=True)
     habit_repetitions = habits.values_list('repetitions', flat=True)
 
-    context = {
+    # Contexto para renderizado
+    context.update({
         "byCategory": json.dumps(allCategories),
         "byFrequency": json.dumps(allFrequencies),
         "categories": categories,
@@ -164,13 +183,15 @@ def estadisticas(request):
         "all_habits_labels": all_habits_labels,
         "all_habits_current_data": all_habits_current_data,
         "all_habits_total_data": all_habits_total_data,
+        
         "completion_labels": completion_labels,
         "completion_percentage_data": completion_percentage_data,
         "frequency_counter": json.dumps(frequency_counter),
+        
         "frequency_labels": json.dumps(frequency_labels),
         "frequency_data": json.dumps(frequency_data),
         "habit_names": json.dumps(list(habit_names)),
         "habit_repetitions": json.dumps(list(habit_repetitions)),
-    }
+    })
 
     return render(request, "stats/index.html", context)

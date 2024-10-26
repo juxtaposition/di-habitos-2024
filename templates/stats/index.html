@@ -28,11 +28,17 @@
       </select>
     </div>
     <div class="col-md-12 mt-3 text-center">
-      <button type="submit" class="btn" style="background-color: #5f0293; color: white">
-        Aplicar Filtros
-      </button>
+        <button type="submit" class="btn" style="background-color: #5f0293; color: white;">
+            Aplicar Filtros
+        </button>
+        <button type="button" class="btn" style="background-color: red; color: white; margin-left: 10px;" onclick="location.href='http://127.0.0.1:8000/stats/?start_date=&end_date=&category='">
+            Eliminar Filtros
+        </button>
     </div>
   </form>
+
+  <!-- Condición para verificar si existen datos -->
+  {% if not no_data %}
 
   <!-- Gráficas principales -->
   <div class="row">
@@ -50,7 +56,7 @@
       <div class="card shadow-sm rounded">
         <div class="card-body">
           <h3 class="card-title mb-0 text-start" style="font-family: 'Anta'">
-            Frecuencias más usadas
+            Repeticiones por Hábito
           </h3>
           <canvas id="habitRadarChart" class="w-100" style="height: 200px"></canvas>
         </div>
@@ -106,13 +112,9 @@
               <canvas id="waterChart" class="w-100" style="height: 300px"></canvas>
           </div>
           <div class="text-start mt-3">
-              <p>Hoy <span class="float-end">{{ today_progress }}</span></p>
+              <p>Progreso Actual <span class="float-end">{{ best_progress }}</span></p>
               <hr />
-              <p>Mejor <span class="float-end">{{ best_progress }}</span></p>
-              <hr />
-              <p>Promedio <span class="float-end">{{ average_progress }}</span></p>
-              <hr />
-              <p>Progreso Final Esperado <span class="float-end">{{ expected_progress }}</span></p>
+              <p>Progreso Total <span class="float-end">{{ expected_progress }}</span></p>
               <hr />
           </div>
       </div>
@@ -136,6 +138,13 @@
 </div>
 
     </div>
+    
+  {% else %}
+    <!-- Mensaje cuando no hay datos -->
+    <div class="alert alert-info text-center mt-4">
+      <p>No se encontraron datos para la fecha o categoría seleccionada.</p>
+    </div>
+  {% endif %}
 
   </div>
 
@@ -157,72 +166,6 @@
   const frequenciesValue = Object.values(frequencies);
 
   const totalSum = categoriesValue.reduce((a, b) => a + b);
-
-var ctx = document.getElementById('habitRadarChart').getContext('2d');
-var habitRadarChart = new Chart(ctx, {
-    type: 'radar',  // Tipo de gráfico: 'radar'
-    data: {
-        labels: {{ habit_names|safe }},  // Los nombres de los hábitos
-        datasets: [{
-            label: 'Repeticiones de hábitos',
-            data: {{ habit_repetitions|safe }},  // Las repeticiones de cada hábito
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',  // Color de fondo semitransparente
-            borderColor: 'rgba(54, 162, 235, 1)',  // Color de la línea
-            borderWidth: 2,  // Grosor de la línea
-            pointBackgroundColor: 'rgba(54, 162, 235, 1)',  // Color de los puntos
-            pointBorderColor: '#fff',  // Borde de los puntos
-            pointHoverBackgroundColor: '#fff',  // Color de los puntos al hacer hover
-            pointHoverBorderColor: 'rgba(54, 162, 235, 1)',  // Borde de los puntos al hacer hover
-        }]
-    },
-    options: {
-        responsive: true,
-        elements: {
-            line: {
-                tension: 0.3  // Curvatura de las líneas (valor entre 0 y 1, 0 es recto)
-            }
-        },
-        plugins: {
-            legend: {
-                display: true,
-                position: 'top',  // Posición de la leyenda
-                labels: {
-                    color: '#A9A9A9',
-                    font: {
-                        family: 'Anta',
-                        size: 14
-                    }
-                }
-            },
-        },
-        scales: {
-            r: {
-                angleLines: {
-                    display: true  // Mostrar las líneas de los ángulos
-                },
-                pointLabels: {
-                    color: '#A9A9A9',
-                    font: {
-                        family: 'Anta',
-                        size: 14
-                    }
-                },
-                ticks: {
-                    beginAtZero: true,
-                    display: false,  // Ocultar los números de las etiquetas
-                    color: '#000000',
-                    font: {
-                        family: 'Anta',
-                        size: 14
-                    }
-                },
-                suggestedMin: 0,  // El mínimo sugerido para el valor en el gráfico
-                suggestedMax: Math.max(...{{ habit_repetitions|safe }}) + 2  // Ajustar el máximo según las repeticiones
-            }
-        }
-    }
-});
-
 
 
 const bgcolors = categoriesName.map(category => {
@@ -283,6 +226,73 @@ var byCategoryChart = new Chart(ctxByCategory, {
     }
 });
 
+
+
+
+var ctx = document.getElementById('habitRadarChart').getContext('2d');
+var habitRadarChart = new Chart(ctx, {
+    type: 'radar',
+    data: {
+        labels: {{ habit_names|safe }},
+        datasets: [{
+            label: 'Repeticiones',
+            data: {{ habit_repetitions|safe }},
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 2,
+            pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgba(54, 162, 235, 1)',
+        }]
+    },
+    options: {
+        responsive: true,
+        elements: {
+            line: {
+                tension: 0.3  
+            }
+        },
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top',
+                labels: {
+                    color: '#A9A9A9',
+                    font: {
+                        family: 'Anta',
+                        size: 14
+                    }
+                }
+            },
+        },
+        scales: {
+            r: {
+                angleLines: {
+                    display: true
+                },
+                pointLabels: {
+                    color: '#A9A9A9',
+                    font: {
+                        family: 'Anta',
+                        size: 14
+                    }
+                },
+                ticks: {
+                    beginAtZero: true,
+                    display: false,
+                    color: '#000000',
+                    font: {
+                        family: 'Anta',
+                        size: 14
+                    }
+                },
+                suggestedMin: 0,
+                suggestedMax: Math.max(...{{ habit_repetitions|safe }}) + 2
+            }
+        }
+    }
+});
 
 
 
