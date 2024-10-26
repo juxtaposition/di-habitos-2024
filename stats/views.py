@@ -77,9 +77,7 @@ def estadisticas(request):
     progress_data = []
     total_repetitions = 0
     expected_progress = 0
-    today_progress = 0
     best_progress = 0
-    average_progress = 0
 
     # Datos específicos de un hábito
     if habit_id:
@@ -110,8 +108,7 @@ def estadisticas(request):
             today_progress = max(0, today_progress)
 
             best_progress = Habit.objects.filter(user_id=usuario, id=habit_id).aggregate(best_progress=Max("current_progress"))['best_progress'] or 0
-            average_progress = Habit.objects.filter(user_id=usuario, id=habit_id).aggregate(average_progress=Avg("current_progress"))['average_progress'] or 0
-
+            
         except Habit.DoesNotExist:
             context['error'] = "Hábito no encontrado."
 
@@ -161,33 +158,29 @@ def estadisticas(request):
 
     habit_names = habits.values_list('name', flat=True)
     habit_repetitions = habits.values_list('repetitions', flat=True)
-
-    # Contexto para renderizado
+    
+    # Contexto para renderizado con json.dumps aplicado a todas las variables necesarias
     context.update({
         "byCategory": json.dumps(allCategories),
         "byFrequency": json.dumps(allFrequencies),
         "categories": categories,
         "total_habits_created": total_habits_created,
-        "labels": labels, 
-        "data": data,
-        "today_progress": today_progress,
+        "labels": json.dumps(labels), 
+        "data": json.dumps(data),
         "best_progress": best_progress,
-        "average_progress": average_progress,
-        "progress_labels": progress_labels,
-        "progress_data": progress_data,
+        "progress_labels": json.dumps(progress_labels),
+        "progress_data": json.dumps(progress_data),
         "total_repetitions": total_repetitions,
         "user_habits": Habit.objects.filter(user_id=usuario),  
-        "habit_labels": progress_labels,
-        "habit_data": progress_data,
+        "habit_labels": json.dumps(progress_labels),
+        "habit_data": json.dumps(progress_data),
         "expected_progress": expected_progress, 
-        "all_habits_labels": all_habits_labels,
-        "all_habits_current_data": all_habits_current_data,
-        "all_habits_total_data": all_habits_total_data,
-        
-        "completion_labels": completion_labels,
-        "completion_percentage_data": completion_percentage_data,
+        "all_habits_labels": json.dumps(all_habits_labels),
+        "all_habits_current_data": json.dumps(all_habits_current_data),
+        "all_habits_total_data": json.dumps(all_habits_total_data),
+        "completion_labels": json.dumps(completion_labels),
+        "completion_percentage_data": json.dumps(completion_percentage_data),
         "frequency_counter": json.dumps(frequency_counter),
-        
         "frequency_labels": json.dumps(frequency_labels),
         "frequency_data": json.dumps(frequency_data),
         "habit_names": json.dumps(list(habit_names)),
