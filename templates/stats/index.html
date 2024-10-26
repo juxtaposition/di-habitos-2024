@@ -41,41 +41,46 @@
     <!-- Condición para verificar si existen datos -->
     {% if not no_data %}
 
-    <!-- Gráficas principales -->
+    <!-- Primeras Gráficas -->
     <div class="row">
+        <!-- Tarjeta de Categorías más Creadas -->
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm rounded">
                 <div class="card-body">
                     <h3 class="card-title mb-0 text-start" style="font-family: 'Anta'">
-                        Categorías más creadas
+                        Categorías más Creadas
                     </h3>
                     <canvas id="byCategory" class="w-100" style="height: 200px"></canvas>
                 </div>
             </div>
         </div>
+        
+        <!-- Tarjeta de Repeticiones por Hábito -->
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm rounded">
                 <div class="card-body">
                     <h3 class="card-title mb-0 text-start" style="font-family: 'Anta'">
                         Repeticiones por Hábito
                     </h3>
-                    <canvas id="habitRadarChart" class="w-100" style="height: 200px"></canvas>
+                    <canvas id="repetitionsPerHabitChart" class="w-100" style="height: 200px"></canvas>
                 </div>
             </div>
         </div>
+        
+        <!-- Frecuencias más Usadas -->
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm rounded">
                 <div class="card-body">
                     <h3 class="card-title mb-0 text-start" style="font-family: 'Anta'">
-                        Frecuencias más usadas
+                        Frecuencias más Usadas
                     </h3>
-                    <canvas id="completionChart" class="w-100" style="height: 200px"></canvas>
+                    <canvas id="mostUsedFrequenciesChart" class="w-100" style="height: 200px"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Nuevas Gráficas -->
+    <!-- Segundas Gráficas -->
     <div class="row">
         <!-- Tarjeta de Hábitos Creados -->
         <div class="col-md-4 mb-4">
@@ -86,7 +91,7 @@
                         <span class="badge" style="background-color: #5f0293">{{ total_habits_created }}</span>
                     </div>
                     <div class="d-flex justify-content-center">
-                        <canvas id="stepsChart" class="w-100" style="height: 280px"></canvas>
+                        <canvas id="createdHabitsChart" class="w-100" style="height: 280px"></canvas>
                     </div>
                 </div>
             </div>
@@ -111,7 +116,7 @@
                             style="background-color: #5f0293; color: white; margin-top: 10px;">Filtrar</button>
                     </form>
                     <div style="margin: 20px 0;">
-                        <canvas id="waterChart" class="w-100" style="height: 300px"></canvas>
+                        <canvas id="specificHabitChart" class="w-100" style="height: 300px"></canvas>
                     </div>
                     <div class="text-start mt-3">
                         <p>Progreso Actual <span class="float-end">{{ best_progress }}</span></p>
@@ -123,7 +128,7 @@
             </div>
         </div>
 
-        <!-- Tarjeta de Progreso Diario de Hábitos -->
+        <!-- Tarjeta de Progreso Acumulado -->
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm rounded">
                 <div class="card-body">
@@ -138,10 +143,11 @@
     </div>
 
     {% else %}
-    <!-- Mensaje cuando no hay datos -->
+
     <div class="alert alert-info text-center mt-4">
         <p>No se encontraron datos para la fecha o categoría seleccionada.</p>
     </div>
+
     {% endif %}
 
 </div>
@@ -150,22 +156,18 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+    // Primeras Gráficas
 
+    // Gráfico de Categorías más Creadas
     const categories = JSON.parse('{{ byCategory | safe }}');
-    //   const categories = {{ byCategory | safe }};
     const categoriesName = Object.keys(categories);
     const categoriesValue = Object.values(categories);
 
-
-
-    // Datos dinámicos para las frecuencias
     const frequencies = JSON.parse('{{ byFrequency | safe }}');
-    //   const frequencies = {{ byFrequency | safe }};
     const frequenciesName = Object.keys(frequencies);
     const frequenciesValue = Object.values(frequencies);
 
     const totalSum = categoriesValue.reduce((a, b) => a + b);
-
 
     const bgcolors = categoriesName.map(category => {
         switch (category) {
@@ -186,7 +188,6 @@
         }
     });
 
-    // Gráfico de frecuencias
     var ctxByCategory = document.getElementById('byCategory').getContext('2d');
 
     var byCategoryChart = new Chart(ctxByCategory, {
@@ -225,18 +226,18 @@
         }
     });
 
+    // Gráfico de Repeticiones por Hábito
+    const names_repetitionsPerHabit = JSON.parse('{{ names_repetitionsPerHabit | safe }}');
+    const repetitions_repetitionsPerHabit = JSON.parse('{{ repetitions_repetitionsPerHabit | safe }}');
 
-    const habit_names = JSON.parse('{{ habit_names | safe }}');
-    const habit_repetitions = JSON.parse('{{ habit_repetitions | safe }}');
-
-    var ctx = document.getElementById('habitRadarChart').getContext('2d');
-    var habitRadarChart = new Chart(ctx, {
+    var ctx = document.getElementById('repetitionsPerHabitChart').getContext('2d');
+    var repetitionsPerHabitChart = new Chart(ctx, {
         type: 'radar',
         data: {
-            labels: habit_names,
+            labels: names_repetitionsPerHabit,
             datasets: [{
                 label: 'Repeticiones',
-                data: habit_repetitions,
+                data: repetitions_repetitionsPerHabit,
                 backgroundColor: 'rgba(54, 162, 235, 0.2)',
                 borderColor: 'rgba(54, 162, 235, 1)',
                 borderWidth: 2,
@@ -288,23 +289,24 @@
                         }
                     },
                     suggestedMin: 0,
-                    suggestedMax: Math.max(...habit_repetitions) + 2
+                    suggestedMax: Math.max(...repetitions_repetitionsPerHabit) + 2
                 }
             }
         }
     });
 
-    const frequency_labels = JSON.parse('{{ frequency_labels | safe }}');
-    const frequency_data = JSON.parse('{{ frequency_data | safe }}');
+    // Gráfico de Frecuencias más Usadas
+    const labels_mostUsedFrequencies = JSON.parse('{{ labels_mostUsedFrequencies | safe }}');
+    const data_mostUsedFrequencies = JSON.parse('{{ data_mostUsedFrequencies | safe }}');
 
-    var ctx = document.getElementById('completionChart').getContext('2d');
-    var completionChart = new Chart(ctx, {
+    var ctx = document.getElementById('mostUsedFrequenciesChart').getContext('2d');
+    var mostUsedFrequenciesChart = new Chart(ctx, {
         type: 'polarArea',
         data: {
-            labels: frequency_labels,
+            labels: labels_mostUsedFrequencies,
             datasets: [{
                 label: 'Frecuencia de hábitos',
-                data: frequency_data,
+                data: data_mostUsedFrequencies,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.6)',
                     'rgba(54, 162, 235, 0.6)',
@@ -361,13 +363,12 @@
         }
     });
 
+    // Segundas Gráficas
 
-
-    // Nuevas Gráficas
     document.addEventListener('DOMContentLoaded', function () {
 
-        // Gráfico de hábitos creados
-        var ctxSteps = document.getElementById('stepsChart').getContext('2d');
+        // Gráfico de Hábitos Creados
+        var ctxSteps = document.getElementById('createdHabitsChart').getContext('2d');
 
         var gradientSteps = ctxSteps.createLinearGradient(0, 0, 0, 400);
         gradientSteps.addColorStop(0, 'rgba(255, 99, 132, 1)');
@@ -379,19 +380,16 @@
         gradientSteps.addColorStop(0.9, 'rgba(255, 99, 132, 0.1)');
         gradientSteps.addColorStop(1, 'rgba(255, 99, 132, 0)');
 
-        const labels_stepsChart = JSON.parse('{{ labels | safe }}');
-        const data_stepsChart = JSON.parse('{{ data | safe }}');
+        const labels_createdHabits = JSON.parse('{{ labels_createdHabits | safe }}');
+        const data_createdHabits = JSON.parse('{{ data_createdHabits | safe }}');
 
-        // const labels_stepsChart = {{labels|safe}};
-        // const data_stepsChart = {{data|safe}};
-
-        var stepsChart = new Chart(ctxSteps, {
+        var createdHabitsChart = new Chart(ctxSteps, {
             type: 'line',
             data: {
-                labels: labels_stepsChart,
+                labels: labels_createdHabits,
                 datasets: [{
                     label: 'Hábitos creados',
-                    data: data_stepsChart,
+                    data: data_createdHabits,
                     borderColor: '#FF464F',
                     borderWidth: 2,
                     fill: true,
@@ -472,21 +470,21 @@
             }
         });
 
-        const habit_labels = JSON.parse('{{ habit_labels | safe }}');
-        const habit_labels_length = JSON.parse('{{ habit_labels|length }}');
-        const total_repetitions = JSON.parse('{{ total_repetitions | safe }}');
-        const habit_data = JSON.parse('{{ habit_data | safe }}');
+        // Gráfico de Hábito Específico
+        const labels_specificHabit = JSON.parse('{{ labels_specificHabit | safe }}');
+        const labels_length_specificHabitChart = JSON.parse('{{ labels_specificHabit | length }}');
+        const total_specificHabit = JSON.parse('{{ total_specificHabit | safe }}');
+        const habit_data_total_specificHabit = JSON.parse('{{ habit_data_total_specificHabit | safe }}');
 
-        // Gráfico del Hábito Específico
-        var ctxWater = document.getElementById('waterChart').getContext('2d');
-        var waterChart = new Chart(ctxWater, {
+        var ctxWater = document.getElementById('specificHabitChart').getContext('2d');
+        var specificHabitChart = new Chart(ctxWater, {
             type: 'bar',
             data: {
-                labels: habit_labels,
+                labels: labels_specificHabit,
                 datasets: [
                     {
                         label: 'Progreso Total',
-                        data: Array(habit_labels_length).fill(total_repetitions),
+                        data: Array(labels_length_specificHabitChart).fill(total_specificHabit),
                         backgroundColor: '#FF464F' + '80',
                         borderWidth: 1,
                         borderRadius: 10,
@@ -495,7 +493,7 @@
                     },
                     {
                         label: 'Progreso Actual',
-                        data: habit_data,
+                        data: habit_data_total_specificHabit,
                         backgroundColor: '#FF464F',
                         borderWidth: 1,
                         borderRadius: 10,
@@ -525,7 +523,7 @@
                     },
                     y: {
                         beginAtZero: true,
-                        max: total_repetitions,
+                        max: total_specificHabit,
                         ticks: {
                             display: false
                         },
@@ -539,8 +537,11 @@
             }
         });
 
-
-        // Define los colores para cada día de la semana
+        // Gráfico de Progreso Acumulado
+        const labels_allHabitsProgress = JSON.parse('{{ labels_allHabitsProgress | safe }}');
+        const data_total_allHabitsProgress = JSON.parse('{{ data_total_allHabitsProgress | safe }}');
+        const data_current_allHabitsProgress = JSON.parse('{{ data_current_allHabitsProgress | safe }}');
+        
         var dayColors = {
             0: '#FF464F',
             1: '#36A2EB',
@@ -551,12 +552,7 @@
             6: '#FF6384'
         };
 
-        const all_habits_labels = JSON.parse('{{ all_habits_labels | safe }}');
-        const all_habits_total_data = JSON.parse('{{ all_habits_total_data | safe }}');
-        const all_habits_current_data = JSON.parse('{{ all_habits_current_data | safe }}');
-
-        // Generar un array de colores basados en el día de la semana para el progreso actual
-        var barColorsCurrent = all_habits_labels.map(function (label) {
+        var barColorsCurrent = labels_allHabitsProgress.map(function (label) {
             var date = new Date(label);
             return dayColors[date.getDay()];
         });
@@ -569,11 +565,11 @@
         var allHabitsProgressChart = new Chart(ctxAllHabits, {
             type: 'bar',
             data: {
-                labels: all_habits_labels,
+                labels: labels_allHabitsProgress,
                 datasets: [
                     {
                         label: 'Progreso Total',
-                        data: all_habits_total_data,
+                        data: data_total_allHabitsProgress,
                         backgroundColor: barColorsTotal,
                         borderWidth: 1,
                         borderRadius: 10,
@@ -582,7 +578,7 @@
                     },
                     {
                         label: 'Progreso Actual',
-                        data: all_habits_current_data,
+                        data: data_current_allHabitsProgress,
                         backgroundColor: barColorsCurrent,
                         borderWidth: 1,
                         borderRadius: 10,
@@ -626,7 +622,6 @@
                 }
             }
         });
-
 
     });
 </script>
