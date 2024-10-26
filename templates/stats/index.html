@@ -12,33 +12,23 @@
   <form method="GET" action="{% url 'stats' %}" class="row mb-4">
     <div class="col-md-4">
       <label for="start_date">Fecha Inicio:</label>
-      <input
-        type="date"
-        name="start_date"
-        class="form-control"
-        id="start_date"
-      />
+      <input type="date" name="start_date" class="form-control" id="start_date" />
     </div>
     <div class="col-md-4">
       <label for="end_date">Fecha Fin:</label>
       <input type="date" name="end_date" class="form-control" id="end_date" />
     </div>
     <div class="col-md-4">
-      <label for="categoria">Categorías:</label>
-      <select name="categoria" class="form-control" id="categoria">
-        <!-- Mostrar dinámicamente las categorías -->
+      <label for="category_id">Categorías:</label>
+      <select name="category" class="form-control" id="category">
         <option value="">Selecciona</option>
         {% for c in categories %}
-        <option value="{{ c.id }}">{{ c.name }}</option>
+          <option value="{{ c.id }}">{{ c.name }}</option>
         {% endfor %}
       </select>
     </div>
     <div class="col-md-12 mt-3 text-center">
-      <button
-        type="submit"
-        class="btn"
-        style="background-color: #5f0293; color: white"
-      >
+      <button type="submit" class="btn" style="background-color: #5f0293; color: white">
         Aplicar Filtros
       </button>
     </div>
@@ -168,26 +158,6 @@
 
   const totalSum = categoriesValue.reduce((a, b) => a + b);
 
-  // Definir los colores según las categorías
-  const bgcolors = categoriesName.map(category => {
-    switch(category) {
-        case 'Escuela':
-            return 'blue';
-        case 'Trabajo':
-            return 'deeppink';
-        case 'Hogar':
-            return 'darkorange';
-        case 'Salud':
-            return 'rgb(9, 192, 122)';
-        case 'Hobby':
-            return '#8500CF';
-        case 'Otros':
-            return 'olive';
-        default:
-            return '#CCCCCC';
-    }
-});
-
 var ctx = document.getElementById('habitRadarChart').getContext('2d');
 var habitRadarChart = new Chart(ctx, {
     type: 'radar',  // Tipo de gráfico: 'radar'
@@ -239,6 +209,7 @@ var habitRadarChart = new Chart(ctx, {
                 },
                 ticks: {
                     beginAtZero: true,
+                    display: false,  // Ocultar los números de las etiquetas
                     color: '#000000',
                     font: {
                         family: 'Anta',
@@ -253,6 +224,25 @@ var habitRadarChart = new Chart(ctx, {
 });
 
 
+
+const bgcolors = categoriesName.map(category => {
+    switch(category) {
+        case 'Escuela':
+            return 'rgba(0, 102, 204, 0.6)'; // Azul con transparencia
+        case 'Trabajo':
+            return 'rgba(255, 20, 147, 0.6)'; // Rosa con transparencia
+        case 'Hogar':
+            return 'rgba(255, 140, 0, 0.6)'; // Naranja con transparencia
+        case 'Salud':
+            return 'rgba(9, 192, 122, 0.6)'; // Verde con transparencia
+        case 'Hobby':
+            return 'rgba(133, 0, 207, 0.6)'; // Morado con transparencia
+        case 'Otros':
+            return 'rgba(128, 128, 0, 0.6)'; // Verde oliva con transparencia
+        default:
+            return 'rgba(204, 204, 204, 0.6)'; // Gris con transparencia
+    }
+});
 
 // Gráfico de frecuencias
 var ctxByCategory = document.getElementById('byCategory').getContext('2d');
@@ -292,6 +282,8 @@ var byCategoryChart = new Chart(ctxByCategory, {
         }
     }
 });
+
+
 
 
 var ctx = document.getElementById('completionChart').getContext('2d');
@@ -340,6 +332,7 @@ var completionChart = new Chart(ctx, {
             r: {
                 ticks: {
                     beginAtZero: true,
+                    display: false,  // Ocultar los números de las etiquetas
                     color: '#000000',
                     font: {
                         family: 'Anta',
