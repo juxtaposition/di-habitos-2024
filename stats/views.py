@@ -171,6 +171,9 @@ def estadisticas(request):
     names_repetitionsPerHabit = habits.values_list('name', flat=True)
     repetitions_repetitionsPerHabit = habits.values_list('repetitions', flat=True)
     
+    # Verificar si no hay datos en byCategory y byFrequency
+    no_data = not allCategories and not allFrequencies
+    
     # Actualizar el contexto con datos procesados y serializados en JSON
     context.update({
         "categories": categories,
@@ -183,6 +186,7 @@ def estadisticas(request):
         "completion_labels": json.dumps(completion_labels),
         "completion_percentage_data": json.dumps(completion_percentage_data),
         "frequency_counter": json.dumps(frequency_counter),
+        "no_data": no_data,
         
         # Gráfico de Categorías más Creadas
         "byCategory": json.dumps(allCategories),
