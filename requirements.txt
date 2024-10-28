@@ -6,3 +6,4 @@ soupsieve==2.6
 sqlparse==0.5.1
 typing_extensions==4.12.2
 chart==0.2.3
+django-crontab

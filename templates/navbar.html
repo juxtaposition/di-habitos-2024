@@ -1,6 +1,9 @@
 {% load static %}
 
+<link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+
 <nav class="navbar navbar-expand-lg navDaily">
+    {% csrf_token %}
     <a class="navbar-brand" href="/">
         <img src="{% static 'img/logoNavbar.png'%}" width="250" height="70" alt="logoNavbar">
     </a>
@@ -13,8 +16,43 @@
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'stats' %}">Estadísticas</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Notificaciones"><i class="ph ph-bell"></i></a>
+            <li class="nav-item dropdown">
+                <a class="nav-link position-relative notification-bell" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="ph ph-bell"></i>
+                    {% if pending_notifications_count > 0 %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge">
+                            {{ pending_notifications_count }}
+                        </span>
+                    {% endif %}
+                </a>
+                <!-- Parte relevante del navbar.html para notificaciones -->
+                <ul class="dropdown-menu dropdown-menu-end notification-menu" aria-labelledby="notificationDropdown">
+                    <div class="notification-header">
+                        <div class="header-content">
+                            <i class="ph ph-bell-ringing"></i>
+                            <span>Centro de Notificaciones</span>
+                        </div>
+                    </div>
+                    {% if notifications %}
+                        {% for notification in notifications %}
+                            <li class="notification-item {% if notification.status == 'pending' %}unread{% endif %}" 
+                                data-notification-id="{{ notification.id }}">
+                                <div class="notification-content">
+                                    <p>{{ notification.message }}</p>
+                                    <small class="text-muted">{{ notification.created_at|timesince }}</small>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="notification-empty">
+                            <div class="empty-state">
+                                <i class="ph ph-check-circle"></i>
+                                <p>¡Todo al día!</p>
+                                <span>Te notificaremos cuando haya algo nuevo</span>
+                            </div>
+                        </li>
+                    {% endif %}
+                </ul>
             </li>
             <li class="nav-item dropdown profile">
                 <a href="" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
