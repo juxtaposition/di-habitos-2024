@@ -106,7 +106,17 @@ def mark_notification_as_read(request, notification_id):
         )
         notification.status = 'read'
         notification.save()
-        return JsonResponse({'success': True})
+
+        # Obtener el nuevo contador de notificaciones pendientes
+        pending_count = HabitNotification.objects.filter(
+            user=request.user,
+            status='pending'
+        ).count()
+
+        return JsonResponse({
+            'success': True,
+            'pending_count': pending_count
+        })
     except HabitNotification.DoesNotExist:
         return JsonResponse({'success': False})
 
@@ -257,3 +267,20 @@ def get_notification_message(habit, notification_type, frequency_type):
     }
 
     return messages[frequency_type][notification_type]
+
+
+def get_latest_notifications(request):
+    """Obtiene las últimas notificaciones y devuelve el HTML actualizado"""
+    notifications = HabitNotification.objects.filter(
+        user=request.user,
+        status='pending'
+    ).order_by('priority', '-created_at')
+
+    html = render_to_string('notification_list.html', {
+        'notifications': notifications,
+    }, request=request)
+
+    return JsonResponse({
+        'html': html,
+        'count': notifications.count()
+    })
