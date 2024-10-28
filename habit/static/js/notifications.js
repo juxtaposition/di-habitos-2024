@@ -19,20 +19,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const notificationBell = document.querySelector('.notification-bell');
     const notificationMenu = document.querySelector('.notification-menu');
 
-    // Funciones de UI
+    // Funciones de UI para mejor transición
     function showEmptyState() {
-        const emptyState = document.createElement('li');
-        emptyState.className = 'notification-item no-notifications';
-        emptyState.innerHTML = `
+    notificationMenu.innerHTML = `
+        <div class="notification-header">
+            <div class="header-content">
+                <i class="ph ph-bell-ringing"></i>
+                <span>Centro de Notificaciones</span>
+            </div>
+        </div>
+        <li class="notification-empty">
             <div class="empty-state">
                 <i class="ph ph-check-circle"></i>
                 <p>¡Todo al día!</p>
                 <span>Te notificaremos cuando haya algo nuevo</span>
             </div>
-        `;
-        emptyState.style.animation = 'fadeIn 0.5s ease';
-        notificationMenu.appendChild(emptyState);
-    }
+        </li>
+    `;
+}
 
     function updateNotificationCount() {
         const unreadNotifications = document.querySelectorAll('.notification-item.unread').length;
