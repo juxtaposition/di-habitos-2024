@@ -46,3 +46,17 @@ Este es un proyecto Django que le da seguimiento a habitos que quiere establecer
    ```
 
 3. Abre un navegador y visita `http://127.0.0.1:8000`
+
+Iniciar el crontab:
+
+bashCopypython manage.py crontab add
+Comandos útiles para manejar crontab:
+bashCopy# Ver trabajos programados
+python manage.py crontab show
+
+# Eliminar trabajos programados
+python manage.py crontab remove
+
+# Reiniciar trabajos programados
+python manage.py crontab remove
+python manage.py crontab add

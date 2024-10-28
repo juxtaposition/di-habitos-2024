@@ -42,7 +42,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'habitos',
     'habit',
-    'stats'
+    'stats',
+    'django_crontab'
+]
+
+CRONJOBS = [
+    ('*/5 * * * *', 'di-habitos-2024.cron.check_and_generate_notifications'),
 ]
 
 MIDDLEWARE = [
