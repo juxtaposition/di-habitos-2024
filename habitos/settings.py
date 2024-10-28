@@ -47,7 +47,7 @@ INSTALLED_APPS = [
 ]
 
 CRONJOBS = [
-    ('*/5 * * * *', 'di-habitos-2024.cron.check_and_generate_notifications'),
+    ('*/5 * * * *', 'habit.cron.check_and_generate_notifications'),
 ]
 
 MIDDLEWARE = [
