@@ -1,87 +1,218 @@
+<!DOCTYPE html>
 {% extends 'base.html' %}
 {% load static %}
-
 {% block content %}
 {% include 'navbar.html' %}
-<div class="container mt-5">
-    <h2 class="text-center">Estadísticas</h2>
+
+<!-- Contenedor principal -->
+<div class="body-content">
+    <h1 class="" style="color: #5f0293;">Estadísticas</h1>
+
+    <br>
 
     <!-- Formulario para filtrar por fecha y categoría -->
-    <form method="GET" class="row mb-4">
+    <form method="GET" action="{% url 'stats' %}" class="row mb-4">
         <div class="col-md-4">
-            <label for="start_date">Fecha Inicio:</label>
-            <input type="date" name="start_date" class="form-control" id="start_date">
+            <label for="start_date" style="color: #5F0293;">Fecha Inicio:</label>
+            <input type="date" name="start_date" class="form-control" id="start_date" />
         </div>
         <div class="col-md-4">
-            <label for="end_date">Fecha Fin:</label>
-            <input type="date" name="end_date" class="form-control" id="end_date">
+            <label for="end_date" style="color: #5F0293;">Fecha Fin:</label>
+            <input type="date" name="end_date" class="form-control" id="end_date" />
         </div>
         <div class="col-md-4">
-            <label for="categorias">Categorías:</label>
-            <select name="categoria" class="form-control" id="categoria">
-                <!-- Mostrar dinámicamente las categorías -->
+            <label for="category_id" style="color: #5F0293;">Categorías:</label>
+            <select name="category" class="form-control" id="category">
                 <option value="">Selecciona</option>
                 {% for c in categories %}
                 <option value="{{ c.id }}">{{ c.name }}</option>
                 {% endfor %}
             </select>
         </div>
-        <div class="col-md-12 mt-3">
-            <button type="submit" class="btn btn-primary">Filtrar</button>
+        <div class="col-md-12 mt-3 text-center">
+            <button type="submit" class="btn btn-apply-filter">
+                Aplicar Filtros
+            </button>
+            <button type="button" class="btn btn-delete-filter"
+                onclick="location.href='http://127.0.0.1:8000/stats/?start_date=&end_date=&category='">
+                Eliminar Filtros
+            </button>
         </div>
     </form>
-    
 
-    <div style="width: 300px; height: 300px">
-    <canvas id="byCategory" width="400" height="200"></canvas>
+    <!-- Condición para verificar si existen datos -->
+    {% if not no_data %}
+
+    <!-- Primeras Gráficas -->
+    <div class="row">
+        <!-- Tarjeta de Categorías más Creadas -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm rounded">
+                <div class="card-body">
+                    <h3 class="card-title mb-0 text-center" style="font-family: 'Anta'">
+                        Categorías más Creadas
+                    </h3>
+                    <canvas id="byCategory" class="w-100" style="height: 200px"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tarjeta de Repeticiones por Hábito -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm rounded">
+                <div class="card-body">
+                    <h3 class="card-title mb-0 text-center" style="font-family: 'Anta'">
+                        Repeticiones por Hábito
+                    </h3>
+                    <canvas id="repetitionsPerHabitChart" class="w-100" style="height: 200px"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Frecuencias más Usadas -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm rounded">
+                <div class="card-body">
+                    <h3 class="card-title mb-0 text-center" style="font-family: 'Anta'">
+                        Frecuencias más Usadas
+                    </h3>
+                    <canvas id="mostUsedFrequenciesChart" class="w-100" style="height: 200px"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
-    <div style="width: 300px; height: 300px"> 
-    <canvas id="byFrequency" width="400" height="200"></canvas>
+
+    <!-- Segundas Gráficas -->
+    <div class="row">
+
+        <div class="col-md-2">
+
+        </div>
+        <!-- Tarjeta de Hábitos Creados -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm rounded">
+                <div class="card-body">
+                    <div class="d-flex justify-content-center align-items-center mb-3">
+                        <h3 class="card-title mb-0 me-3">Hábitos Creados</h3>
+                        <span class="badge" style="background-color: #5f0293">{{ total_habits_created }}</span>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <canvas id="createdHabitsChart" class="w-100" style="height: 280px"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta del Hábito Específico -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm rounded">
+                <div class="card-body">
+                    <h3 class="card-title mb-0 text-center" style="font-family: 'Anta'">
+                        Hábito Específico
+                    </h3>
+                    <form method="GET" class="mt-3 text-center">
+                        <select name="habit_id" id="habit_id" class="form-select">
+                            {% for habit in user_habits %}
+                            <option value="{{ habit.id }}" {% if habit.id|stringformat:"s" == request.GET.habit_id %}selected{% endif %}>
+                                {{ habit.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-filter">Filtrar</button>
+                        <br><br>
+                    </form>
+                    <div class="chart-container" style="position: relative; height: 300px; overflow-x: auto; overflow-y: hidden;">
+                        <div style="min-width: 500px; height: 300px;">
+                            <canvas id="specificHabitChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
-    <div style="width: 300px; height: 300px"> 
-    <canvas id="points" width="400" height="200"></canvas>
-    </div>
+
+    {% else %}
+
+    <div class="d-flex justify-content-center mt-5">
+        <div class="alert text-center" style="color: #000000; font-size: 1.1em; padding: 5px 20px; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center;">
+            <p style="margin: 0; margin-top: 50px;">No se encontraron datos para la fecha o categoría seleccionada.</p>
+        </div>
+    </div>    
+
+    {% endif %}
+
+    <br><br>
+
 </div>
 
+<!-- Librería de Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    const bgcolors             = ['#FF5733', '#C70039', '#C70039', ' #581845', '#FFC300']
-    const categories         = {{ byCategory |safe}}
-    const categoriesName     = Object.keys(categories);
-    const categoriesValue    = Object.values(categories);
+    // Primeras Gráficas
 
-    const frequencies         = {{ byFrequency |safe}}
-    const frequenciesName     = Object.keys(frequencies);
-    const frequenciesValue    = Object.values(frequencies);
+    // Gráfico de Categorías más Creadas
+    const categories = JSON.parse('{{ byCategory | safe }}');
+    const categoriesName = Object.keys(categories);
+    const categoriesValue = Object.values(categories);
 
-    const totalSum           = categoriesValue.reduce((a, b) => a+b)
-    const ctxByCategory      = document.getElementById('byCategory').getContext('2d');
-    const ctxByFrequency     = document.getElementById('byFrequency').getContext('2d');
-    const ctxPoints          = document.getElementById('points').getContext('2d');
+    const frequencies = JSON.parse('{{ byFrequency | safe }}');
+    const frequenciesName = Object.keys(frequencies);
+    const frequenciesValue = Object.values(frequencies);
 
-    new Chart(ctxByCategory, {
+    const totalSum = categoriesValue.reduce((a, b) => a + b);
+
+    const bgcolors = categoriesName.map(category => {
+        switch (category) {
+            case 'Escuela':
+                return 'rgba(0, 102, 204, 0.6)';
+            case 'Trabajo':
+                return 'rgba(255, 20, 147, 0.6)';
+            case 'Hogar':
+                return 'rgba(255, 140, 0, 0.6)';
+            case 'Salud':
+                return 'rgba(9, 192, 122, 0.6)';
+            case 'Hobby':
+                return 'rgba(133, 0, 207, 0.6)';
+            case 'Otros':
+                return 'rgba(128, 128, 0, 0.6)';
+            default:
+                return 'rgba(204, 204, 204, 0.6)';
+        }
+    });
+
+    var ctxByCategory = document.getElementById('byCategory').getContext('2d');
+
+    var byCategoryChart = new Chart(ctxByCategory, {
         type: 'doughnut',
         data: {
             labels: categoriesName,
             datasets: [{
                 data: categoriesValue,
                 backgroundColor: bgcolors,
-                borderColor: ' #DAF7A6',
+                borderColor: '#fff',
                 borderWidth: 1
             }]
         },
         options: {
+            responsive: true,
             plugins: {
-                title: {
+                legend: {
                     display: true,
-                    text: 'Categorias más creadas'
-                  },
+                    labels: {
+                        color: '#A9A9A9',
+                        font: {
+                            family: 'Anta',
+                            size: 14
+                        }
+                    }
+                },
                 tooltip: {
                     callbacks: {
-                        label: function(args) {
-                            console.log(args.raw / total.length)
-                            return `${(Math.floor((args.raw / totalSum)*100))}% del total`;
+                        label: function (args) {
+                            const percentage = (args.raw / totalSum * 100).toFixed(2);
+                            return `${percentage}% del total`;
                         }
                     }
                 }
@@ -89,33 +220,130 @@
         }
     });
 
-    new Chart(ctxByFrequency, {
-        type: 'bar',
+    // Gráfico de Repeticiones por Hábito
+    const names_repetitionsPerHabit = JSON.parse('{{ names_repetitionsPerHabit | safe }}');
+    const repetitions_repetitionsPerHabit = JSON.parse('{{ repetitions_repetitionsPerHabit | safe }}');
+
+    var ctx = document.getElementById('repetitionsPerHabitChart').getContext('2d');
+    var repetitionsPerHabitChart = new Chart(ctx, {
+        type: 'radar',
         data: {
-            labels: frequenciesName,
+            labels: names_repetitionsPerHabit,
             datasets: [{
-                label: "Frecuencias",
-                data: frequenciesValue,
-                backgroundColor: bgcolors,
-                borderColor: '#DAF7A6',
-                borderWidth: 1
+                label: 'Repeticiones',
+                data: repetitions_repetitionsPerHabit,
+                backgroundColor: 'rgba(133, 0, 207, 0.3)',
+                borderColor: '#5F0293',
+                borderWidth: 2,
+                pointBackgroundColor: '#5F0293',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: '#5F0293',
             }]
         },
         options: {
-           scales: {
-                y: {
-                    beginAtZero: true
+            responsive: true,
+            elements: {
+                line: {
+                    tension: 0.3
                 }
             },
             plugins: {
-                title: {
+                legend: {
                     display: true,
-                    text: 'Frecuencias más usadas'
-                  },
-                tooltip: {
-                    callbacks: {
-                        label: function(args) {
-                            return `${(Math.floor((args.raw / totalSum)*100))}% del total`;
+                    position: 'top',
+                    labels: {
+                        color: '#A9A9A9',
+                        font: {
+                            family: 'Anta',
+                            size: 14
+                        }
+                    }
+                },
+            },
+            scales: {
+                r: {
+                    angleLines: {
+                        display: true
+                    },
+                    pointLabels: {
+                        color: '#A9A9A9',
+                        font: {
+                            family: 'Anta',
+                            size: 14
+                        }
+                    },
+                    ticks: {
+                        beginAtZero: true,
+                        display: false,
+                        color: '#000000',
+                        font: {
+                            family: 'Anta',
+                            size: 14
+                        }
+                    },
+                    suggestedMin: 0,
+                    suggestedMax: Math.max(...repetitions_repetitionsPerHabit) + 2
+                }
+            }
+        }
+    });
+
+    // Gráfico de Frecuencias más Usadas
+    const labels_mostUsedFrequencies = JSON.parse('{{ labels_mostUsedFrequencies | safe }}');
+    const data_mostUsedFrequencies = JSON.parse('{{ data_mostUsedFrequencies | safe }}');
+
+    var ctx = document.getElementById('mostUsedFrequenciesChart').getContext('2d');
+    var mostUsedFrequenciesChart = new Chart(ctx, {
+        type: 'polarArea',
+        data: {
+            labels: labels_mostUsedFrequencies,
+            datasets: [{
+                label: 'Frecuencia de hábitos',
+                data: data_mostUsedFrequencies,
+                backgroundColor: [
+                    'rgba(133, 0, 207, 0.3)',     
+                    'rgba(255, 230, 0, 0.3)',     
+                    'rgba(255, 106, 0, 0.3)'
+                ],
+                borderColor: [
+                    'rgba(133, 0, 207, 1)',      
+                    'rgba(255, 230, 0, 1)',       
+                    'rgba(255, 106, 0, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    labels: {
+                        color: '#A9A9A9',
+                        font: {
+                            family: 'Anta',
+                            size: 14
+                        }
+                    }
+                },
+            },
+            scales: {
+                r: {
+                    ticks: {
+                        beginAtZero: true,
+                        display: false,
+                        color: '#000000',
+                        font: {
+                            family: 'Anta',
+                            size: 14
+                        }
+                    },
+                    pointLabels: {
+                        color: '#A9A9A9',
+                        font: {
+                            family: 'Anta',
+                            size: 14
                         }
                     }
                 }
@@ -123,41 +351,302 @@
         }
     });
 
-    /* Esto es un ejemplo que seria bueno crear con fechas del los habitos */
-    new Chart(ctxPoints, {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [
-              {
-                label: 'history',
-                data: [
-                { x: '2024-10-01', y: 10 },
-                { x: '2024-10-02', y: 15 },
-                { x: '2024-10-03', y: 20 },
-                { x: '2024-10-04', y: 25 },
-                { x: '2024-10-05', y: 30 },
-                { x: '2024-10-06', y: 28 },
-                { x: '2024-10-07', y: 350 },
-            ],
-                borderColor:'#DAF7A6',
-                backgroundColor: bgcolors,
-                pointStyle: 'circle',
-                pointRadius: 10,
-                pointHoverRadius: 15
-              }
-            ],
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            title: {
-              display: true,
-              text: (ctx) => 'Example: ' + ctx.chart.data.datasets[0].pointStyle,
+    // Segundas Gráficas
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // Gráfico de Hábitos Creados
+        var ctxSteps = document.getElementById('createdHabitsChart').getContext('2d');
+
+        var gradientSteps = ctxSteps.createLinearGradient(0, 0, 0, 400);
+        gradientSteps.addColorStop(0, 'rgba(133, 0, 207, 1)');       // Morado sólido
+        gradientSteps.addColorStop(0.1, 'rgba(133, 0, 207, 0.9)');
+        gradientSteps.addColorStop(0.2, 'rgba(133, 0, 207, 0.7)');
+        gradientSteps.addColorStop(0.3, 'rgba(133, 0, 207, 0.5)');
+        gradientSteps.addColorStop(0.5, 'rgba(133, 0, 207, 0.3)');
+        gradientSteps.addColorStop(0.7, 'rgba(133, 0, 207, 0.2)');
+        gradientSteps.addColorStop(0.9, 'rgba(133, 0, 207, 0.1)');
+        gradientSteps.addColorStop(1, 'rgba(133, 0, 207, 0)');       // Transparente           
+
+        const labels_createdHabits = JSON.parse('{{ labels_createdHabits | safe }}');
+        const data_createdHabits = JSON.parse('{{ data_createdHabits | safe }}');
+
+        var createdHabitsChart = new Chart(ctxSteps, {
+            type: 'line',
+            data: {
+                labels: labels_createdHabits,
+                datasets: [{
+                    label: 'Hábitos creados',
+                    data: data_createdHabits,
+                    borderColor: '#5F0293',
+                    borderWidth: 2,
+                    fill: true,
+                    backgroundColor: gradientSteps,
+                    pointRadius: 0,
+                    pointHoverRadius: 8,
+                    pointHoverBorderColor: '#5F0293',
+                    pointHoverBackgroundColor: 'white'
+                }]
+            },
+            options: {
+                elements: {
+                    point: {
+                        radius: function (context) {
+                            return context.dataIndex === 2 ? 10 : 0;
+                        },
+                        backgroundColor: function (context) {
+                            return context.dataIndex === 2 ? '#5F0293' : 'rgba(128, 0, 128, 0)';
+                        },
+                        borderColor: function (context) {
+                            return context.dataIndex === 2 ? '#FFFFFF' : '#5F0293';
+                        },
+                        borderWidth: 5,
+                    },
+                    line: {
+                        tension: 0.4
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (tooltipItem) {
+                                return 'Hábitos: ' + tooltipItem.raw;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            borderDash: [5, 5],
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        ticks: {
+                            color: '#A9A9A9',
+                            font: {
+                                family: 'Anta',
+                                size: 14
+                            },
+                            maxRotation: 75,
+                            minRotation: 75
+                        }
+                    },
+                    y: {
+                        display: false
+                    }
+                },
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 10,
+                        top: 10,
+                        bottom: 10
+                    }
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                }
             }
-          }
+        });
+
+        // Gráfico de Hábito Específico
+        const labels_specificHabit = JSON.parse('{{ labels_specificHabit | safe }}');
+        const total_specificHabit = JSON.parse('{{ total_specificHabit | safe }}');
+        const habit_data_total_specificHabit = JSON.parse('{{ habit_data_total_specificHabit | safe }}');
+
+        // Función para generar fechas entre dos fechas
+        function getDatesInRange(startDate, endDate) {
+            const dates = [];
+            let currentDate = new Date(startDate);
+            const end = new Date(endDate);
+            
+            while (currentDate <= end) {
+                dates.push(new Date(currentDate).toISOString().split('T')[0]);
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            
+            return dates;
         }
+
+        // Obtener fecha inicial y fecha actual
+        const startDate = new Date(labels_specificHabit[0]);
+        const currentDate = new Date();
+
+        // Generar array de todas las fechas desde el inicio hasta hoy
+        const allDates = getDatesInRange(startDate, currentDate);
+
+        // Crear array de progreso actual para todas las fechas
+        const progressData = allDates.map(date => {
+            const index = labels_specificHabit.indexOf(date);
+            // Si no hay dato para esa fecha, retornamos null en lugar de 0
+            // Esto hará que Chart.js no muestre la barra en lugar de mostrar una barra en 0
+            return index !== -1 ? habit_data_total_specificHabit[index] : null;
+        });
+
+        var ctxWater = document.getElementById('specificHabitChart').getContext('2d');
+        var specificHabitChart = new Chart(ctxWater, {
+            type: 'bar',
+            data: {
+                labels: allDates,
+                datasets: [
+                    {
+                        label: 'Meta',
+                        data: Array(allDates.length).fill(total_specificHabit),
+                        backgroundColor: '#5F0293' + '80',
+                        borderWidth: 1,
+                        borderRadius: 10,
+                        borderSkipped: false,
+                        barThickness: 15
+                    },
+                    {
+                        label: 'Progreso',
+                        data: progressData,
+                        backgroundColor: '#FFE600'+ '80',
+                        borderWidth: 1,
+                        borderRadius: 10,
+                        borderSkipped: false,
+                        barThickness: 15
+                    }
+                ]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true 
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const date = new Date(tooltipItems[0].label);
+                                return date.toLocaleDateString();
+                            },
+                            label: function(context) {
+                                const datasetLabel = context.dataset.label;
+                                const value = context.raw ?? 'Sin datos';
+                                return `${datasetLabel}: ${value}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#A9A9A9',
+                            font: {
+                                size: 14,
+                                family: 'Anta'
+                            },
+                            callback: function(value, index) {
+                                const date = new Date(this.getLabelForValue(value));
+                                return date.toLocaleDateString();
+                            },
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        max: total_specificHabit,
+                        ticks: {
+                            display: true, 
+                            font: {
+                                size: 12,
+                                family: 'Anta'
+                            }
+                        },
+                        grid: {
+                            color: '#E0E0E0',
+                            borderDash: [5, 5],
+                            drawBorder: false
+                        }
+                    }
+                },
+            }
+        });
+
+        const updateChartContainerWidth = () => {
+        const dataLength = allDates.length;
+        const minWidth = Math.max(800, dataLength * 20); 
+        document.querySelector('.chart-container > div').style.minWidth = `${minWidth}px`;
+        };
+
+        updateChartContainerWidth();
+
     });
+
+
 </script>
+
+<style>
+
+    .btn.btn-apply-filter {
+        background-color: #8500CF; 
+        border-radius: 500px;
+        color: white; 
+        font-family: "Anta", sans-serif;
+        margin-top: 10px;
+        width: 150px;
+
+    }
+    .btn.btn-apply-filter:hover {
+        background-color: #5F0293;
+        color: white;
+    }
+    .btn.btn-delete-filter {
+        background-color: #dc3545; 
+        border-radius: 500px;
+        color: white; 
+        font-family: "Anta", sans-serif;
+        margin-top: 10px;
+        width: 150px;
+    }
+    .btn.btn-delete-filter:hover {
+        background-color: #ab2532;
+        color: white;
+    }
+    .btn.btn-filter {
+        background-color: #8500CF; 
+        border-radius: 500px;
+        color: white; 
+        font-family: "Anta", sans-serif;
+        margin-top: 10px;
+        width: 100px;
+    }
+    .btn.btn-filter:hover {
+        background-color: #5F0293;
+        color: white;
+    }
+    .chart-container::-webkit-scrollbar {
+        height: 8px;
+    }
+    
+    .chart-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+    
+    .chart-container::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+    
+    .chart-container::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+</style>
 
 {% endblock %}

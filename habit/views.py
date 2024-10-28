@@ -9,6 +9,7 @@ from django.db import models
 
 from .models import Habit, HabitNotification
 from .forms import HabitForm
+from .models import Habit
 
 
 @login_required
@@ -69,7 +70,6 @@ def edit_habit(request, habit_id):
 
     html = render_to_string('habit/habit_form_modal.html', {'form': form}, request=request)
     return JsonResponse({'html': html})
-
 
 @login_required
 def delete_habit(request, habit_id):
