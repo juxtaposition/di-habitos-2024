@@ -2,6 +2,13 @@
 
 Este es un proyecto Django que le da seguimiento a habitos que quiere establecer el usuario.
 
+## Integrantes
+- Zuriel Enrique Martínez Hernández
+- Fernanda Moreno Castro
+- Joel Miguel Maya Castrejón
+- Kevin Steve Quezada Ordoñez
+- Durán Pérez Gerardo Ezequiel
+
 ## Requisitos previos
 
 - Python 3.x
@@ -12,7 +19,7 @@ Este es un proyecto Django que le da seguimiento a habitos que quiere establecer
 
 1. Clona el repositorio:
    ```
-   git clone https://github.com/juxtaposition/di-habitos-2024/tree/develoment
+   git clone https://github.com/juxtaposition/di-habitos-2024.git
    cd di-habitos-2024
    ```
 
