@@ -205,12 +205,7 @@ def estadisticas(request):
         # Gráfico de Hábito Específico  
         "labels_specificHabit": json.dumps(progress_labels),
         "total_specificHabit": total_specificHabit,
-        "habit_data_total_specificHabit": json.dumps(progress_data),
-
-        # Gráfico de Progreso Acumulado
-        "labels_allHabitsProgress": json.dumps(labels_allHabitsProgress),
-        "data_total_allHabitsProgress": json.dumps(data_total_allHabitsProgress),
-        "data_current_allHabitsProgress": json.dumps(data_current_allHabitsProgress),  
+        "habit_data_total_specificHabit": json.dumps(progress_data), 
     })
 
     return render(request, "stats/index.html", context)

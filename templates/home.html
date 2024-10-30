@@ -81,7 +81,7 @@
                 </div>
                 <div class="progress" style="height: 20px; margin-top: 10px;">
                     <div class="progress-bar" role="progressbar" 
-                         style="width: {{ habit.get_progress_percentage }}; background-color: #FFE600; color: black;" 
+                         style="width: {{ habit.get_progress_percentage }}%; background-color: #FFE600; color: black;" 
                          aria-valuenow="{{ habit.current_progress }}" aria-valuemin="0" aria-valuemax="{{ habit.repetitions }}">
                         {{ habit.current_progress }}/{{ habit.repetitions }}
                     </div>
