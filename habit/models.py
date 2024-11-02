@@ -36,6 +36,9 @@ class Habit(models.Model):
     current_progress = models.PositiveIntegerField(default=0)
     last_reset = models.DateTimeField(default=timezone.now)
 
+    def get_progress_for_date(self, date):
+        return self.progress_history.filter(date=date).first()
+
     def reset_progress_if_needed(self):
         now = timezone.now()
         if self.frequency == 'Diario' and self.last_reset.date() < now.date():
@@ -53,12 +56,36 @@ class Habit(models.Model):
         self.reset_progress_if_needed()
         if self.current_progress < self.repetitions:
             self.current_progress += 1
+            
+            # Guardar el progreso histórico
+            today = timezone.now().date()
+            progress_record, created = HabitProgress.objects.get_or_create(
+                habit=self,
+                date=today,
+                defaults={'progress': 1}
+            )
+            
+            if not created:
+                progress_record.progress += 1
+                progress_record.save()
+            
             self.save()
 
     def get_progress_percentage(self):
         return (self.current_progress / self.repetitions) * 100 if self.repetitions > 0 else 0
 
-
     def __str__(self):
         return f"{self.name}"
+    
+class HabitProgress(models.Model):
+    habit = models.ForeignKey(Habit, on_delete=models.CASCADE, related_name='progress_history')
+    date = models.DateField()
+    progress = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        unique_together = ['habit', 'date']
+        ordering = ['-date']
+
+    def __str__(self):
+        return f"{self.habit.name} - {self.date} - Progress: {self.progress}"
 

@@ -6,7 +6,7 @@ from django.utils.dateparse import parse_date
 from django.db.models import Sum, Count, Max, Avg
 import json
 from collections import Counter
-from datetime import datetime
+from datetime import datetime, timedelta
 
 @login_required
 def estadisticas(request):
@@ -87,32 +87,30 @@ def estadisticas(request):
     if habit_id:
         try:
             habit = Habit.objects.get(id=habit_id, user_id=usuario)
-            expected_progress = habit.repetitions 
-            progress_by_date = (
-                Habit.objects.filter(id=habit_id)
-                .values("created_at__date")
-                .annotate(
-                    total_repetitions=Sum("repetitions"),
-                    current_progress=Sum("current_progress")
-                )
-                .order_by("created_at__date")
-            )
-
-            if progress_by_date.exists():
-                progress_labels = [entry["created_at__date"].strftime("%Y-%m-%d") for entry in progress_by_date]
-                progress_data = [entry["current_progress"] for entry in progress_by_date]
-                total_specificHabit = habit.repetitions
-
-            today_progress = Habit.objects.filter(
-                user_id=usuario,
-                created_at__date=datetime.now().date(),
-                id=habit_id
-            ).aggregate(today_progress=Sum("current_progress"))['today_progress'] or 0
-            today_progress = max(0, today_progress)
-
-            best_progress = Habit.objects.filter(user_id=usuario, id=habit_id).aggregate(
-                best_progress=Max("current_progress")
-            )['best_progress'] or 0
+            expected_progress = habit.repetitions
+            
+            habit_creation_date = habit.created_at.date()
+            current_date = datetime.now().date()
+            
+            date_list = []
+            progress_list = []
+            
+            current = habit_creation_date
+            while current <= current_date:
+                date_list.append(current)
+                
+                # Obtener el progreso del historial
+                daily_progress = habit.progress_history.filter(
+                    date=current
+                ).values_list('progress', flat=True).first() or 0
+                
+                progress_list.append(daily_progress)
+                current += timedelta(days=1)
+            
+            progress_labels = [date.strftime("%Y-%m-%d") for date in date_list]
+            progress_data = progress_list
+            total_specificHabit = habit.repetitions
+            best_progress = max(progress_list) if progress_list else 0
             
         except Habit.DoesNotExist:
             context['error'] = "Hábito no encontrado."

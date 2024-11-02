@@ -114,15 +114,12 @@
                         </select>
                         <button type="submit" class="btn"
                             style="background-color: #5f0293; color: white; margin-top: 10px;">Filtrar</button>
+                            <br><br>
                     </form>
-                    <div style="margin: 20px 0;">
-                        <canvas id="specificHabitChart" class="w-100" style="height: 300px"></canvas>
-                    </div>
-                    <div class="text-start mt-3">
-                        <p>Progreso Actual <span class="float-end">{{ best_progress }}</span></p>
-                        <hr />
-                        <p>Progreso Total <span class="float-end">{{ expected_progress }}</span></p>
-                        <hr />
+                    <div class="chart-container" style="position: relative; height: 300px; overflow-x: auto; overflow-y: hidden;">
+                        <div style="min-width: 500px; height: 300px;">
+                            <canvas id="specificHabitChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -474,19 +471,47 @@
 
         // Gráfico de Hábito Específico
         const labels_specificHabit = JSON.parse('{{ labels_specificHabit | safe }}');
-        const labels_length_specificHabitChart = JSON.parse('{{ labels_specificHabit | length }}');
         const total_specificHabit = JSON.parse('{{ total_specificHabit | safe }}');
         const habit_data_total_specificHabit = JSON.parse('{{ habit_data_total_specificHabit | safe }}');
+
+        // Función para generar fechas entre dos fechas
+        function getDatesInRange(startDate, endDate) {
+            const dates = [];
+            let currentDate = new Date(startDate);
+            const end = new Date(endDate);
+            
+            while (currentDate <= end) {
+                dates.push(new Date(currentDate).toISOString().split('T')[0]);
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            
+            return dates;
+        }
+
+        // Obtener fecha inicial y fecha actual
+        const startDate = new Date(labels_specificHabit[0]);
+        const currentDate = new Date();
+
+        // Generar array de todas las fechas desde el inicio hasta hoy
+        const allDates = getDatesInRange(startDate, currentDate);
+
+        // Crear array de progreso actual para todas las fechas
+        const progressData = allDates.map(date => {
+            const index = labels_specificHabit.indexOf(date);
+            // Si no hay dato para esa fecha, retornamos null en lugar de 0
+            // Esto hará que Chart.js no muestre la barra en lugar de mostrar una barra en 0
+            return index !== -1 ? habit_data_total_specificHabit[index] : null;
+        });
 
         var ctxWater = document.getElementById('specificHabitChart').getContext('2d');
         var specificHabitChart = new Chart(ctxWater, {
             type: 'bar',
             data: {
-                labels: labels_specificHabit,
+                labels: allDates,
                 datasets: [
                     {
-                        label: 'Progreso Total',
-                        data: Array(labels_length_specificHabitChart).fill(total_specificHabit),
+                        label: 'Meta Total',
+                        data: Array(allDates.length).fill(total_specificHabit),
                         backgroundColor: '#FF464F' + '80',
                         borderWidth: 1,
                         borderRadius: 10,
@@ -494,8 +519,8 @@
                         barThickness: 15
                     },
                     {
-                        label: 'Progreso Actual',
-                        data: habit_data_total_specificHabit,
+                        label: 'Progreso Diario',
+                        data: progressData,
                         backgroundColor: '#FF464F',
                         borderWidth: 1,
                         borderRadius: 10,
@@ -505,9 +530,24 @@
                 ]
             },
             options: {
+                maintainAspectRatio: false,
+                responsive: true,
                 plugins: {
                     legend: {
-                        display: false
+                        display: true 
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const date = new Date(tooltipItems[0].label);
+                                return date.toLocaleDateString();
+                            },
+                            label: function(context) {
+                                const datasetLabel = context.dataset.label;
+                                const value = context.raw ?? 'Sin datos';
+                                return `${datasetLabel}: ${value}`;
+                            }
+                        }
                     }
                 },
                 scales: {
@@ -520,14 +560,24 @@
                             font: {
                                 size: 14,
                                 family: 'Anta'
-                            }
+                            },
+                            callback: function(value, index) {
+                                const date = new Date(this.getLabelForValue(value));
+                                return date.toLocaleDateString();
+                            },
+                            maxRotation: 45,
+                            minRotation: 45
                         }
                     },
                     y: {
                         beginAtZero: true,
                         max: total_specificHabit,
                         ticks: {
-                            display: false
+                            display: true, 
+                            font: {
+                                size: 12,
+                                family: 'Anta'
+                            }
                         },
                         grid: {
                             color: '#E0E0E0',
@@ -535,7 +585,7 @@
                             drawBorder: false
                         }
                     }
-                }
+                },
             }
         });
 
@@ -626,6 +676,34 @@
         });
 
     });
+
+const updateChartContainerWidth = () => {
+    const dataLength = allDates.length;
+    const minWidth = Math.max(800, dataLength * 20); 
+    document.querySelector('.chart-container > div').style.minWidth = `${minWidth}px`;
+};
+
+updateChartContainerWidth();
 </script>
+
+<style>
+    .chart-container::-webkit-scrollbar {
+        height: 8px;
+    }
+    
+    .chart-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+    
+    .chart-container::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+    
+    .chart-container::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+</style>
 
 {% endblock %}
