@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.utils import timezone
 
 class Category(models.Model):
 
@@ -23,6 +24,7 @@ class Habit(models.Model):
         ('Diario', 'Diario'),
         ('Semanal', 'Semanal'),
         ('Mensual', 'Mensual')
+    )
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)

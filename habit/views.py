@@ -4,10 +4,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST
 from .models import Habit
 from .forms import HabitForm
 from .models import Habit
 
+@login_required
 @login_required
 def habit_list(request):
     habits = Habit.objects.filter(user=request.user)
@@ -57,6 +59,17 @@ def delete_habit(request, habit_id):
         return redirect('habit_list')
     return render(request, 'habit/confirm_delete.html', {'habit': habit}) # TODO: Use our delete view
 
+
+@login_required
+@require_POST
+def increment_progress(request, habit_id):
+    habit = get_object_or_404(Habit, id=habit_id, user=request.user)
+    habit.increment_progress()
+    return JsonResponse({
+        'current_progress': habit.current_progress,
+        'progress_percentage': habit.get_progress_percentage(),
+        'repetitions': habit.repetitions
+    })
 
 @login_required
 @require_POST
