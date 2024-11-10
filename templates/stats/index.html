@@ -84,6 +84,10 @@
 
     <!-- Segundas Gráficas -->
     <div class="row">
+
+        <div class="col-md-2">
+
+        </div>
         <!-- Tarjeta de Hábitos Creados -->
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm rounded">
@@ -126,29 +130,19 @@
             </div>
         </div>
 
-        <!-- Tarjeta de Progreso Acumulado -->
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-sm rounded">
-                <div class="card-body">
-                    <div class="d-flex justify-content-center text-center">
-                        <h3 class="text-center" style="color: #000000">Progreso Acumulado</h3>
-                    </div>
-                    <canvas id="allHabitsProgressChart" class="w-100" style="height: 280px"></canvas>
-                </div>
-            </div>
-        </div>
-
     </div>
 
     {% else %}
 
-    <div class="d-flex justify-content-center mt-4">
-        <div class="alert text-center" style="background-color: #ff0000; color: #000000; font-size: 1.1em; padding: 5px 20px; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center;">
-            <p style="margin: 0;">No se encontraron datos para la fecha o categoría seleccionada.</p>
+    <div class="d-flex justify-content-center mt-5">
+        <div class="alert text-center" style="color: #000000; font-size: 1.1em; padding: 5px 20px; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center;">
+            <p style="margin: 0; margin-top: 50px;">No se encontraron datos para la fecha o categoría seleccionada.</p>
         </div>
     </div>    
 
     {% endif %}
+
+    <br><br>
 
 </div>
 
@@ -584,101 +578,17 @@
             }
         });
 
-        // Gráfico de Progreso Acumulado
-        const labels_allHabitsProgress = JSON.parse('{{ labels_allHabitsProgress | safe }}');
-        const data_total_allHabitsProgress = JSON.parse('{{ data_total_allHabitsProgress | safe }}');
-        const data_current_allHabitsProgress = JSON.parse('{{ data_current_allHabitsProgress | safe }}');
-        
-        var dayColors = {
-            0: '#FF464F',
-            1: '#36A2EB',
-            2: '#FFCE56',
-            3: '#4BC0C0',
-            4: '#9966FF',
-            5: '#FF9F40',
-            6: '#FF6384'
+        const updateChartContainerWidth = () => {
+        const dataLength = allDates.length;
+        const minWidth = Math.max(800, dataLength * 20); 
+        document.querySelector('.chart-container > div').style.minWidth = `${minWidth}px`;
         };
 
-        var barColorsCurrent = labels_allHabitsProgress.map(function (label) {
-            var date = new Date(label);
-            return dayColors[date.getDay()];
-        });
-
-        var barColorsTotal = barColorsCurrent.map(function (color) {
-            return color + '80';
-        });
-
-        var ctxAllHabits = document.getElementById('allHabitsProgressChart').getContext('2d');
-        var allHabitsProgressChart = new Chart(ctxAllHabits, {
-            type: 'bar',
-            data: {
-                labels: labels_allHabitsProgress,
-                datasets: [
-                    {
-                        label: 'Progreso Total',
-                        data: data_total_allHabitsProgress,
-                        backgroundColor: barColorsTotal,
-                        borderWidth: 1,
-                        borderRadius: 10,
-                        borderSkipped: false,
-                        barThickness: 15
-                    },
-                    {
-                        label: 'Progreso Actual',
-                        data: data_current_allHabitsProgress,
-                        backgroundColor: barColorsCurrent,
-                        borderWidth: 1,
-                        borderRadius: 10,
-                        borderSkipped: false,
-                        barThickness: 15
-                    }
-                ]
-            },
-            options: {
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: {
-                            display: false
-                        },
-                        ticks: {
-                            color: '#A9A9A9',
-                            font: {
-                                family: 'Anta',
-                                size: 14
-                            },
-                            maxRotation: 75,
-                            minRotation: 75
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            display: false
-                        },
-                        grid: {
-                            color: '#E0E0E0',
-                            borderDash: [5, 5],
-                            drawBorder: false
-                        }
-                    }
-                }
-            }
-        });
+        updateChartContainerWidth();
 
     });
 
-const updateChartContainerWidth = () => {
-    const dataLength = allDates.length;
-    const minWidth = Math.max(800, dataLength * 20); 
-    document.querySelector('.chart-container > div').style.minWidth = `${minWidth}px`;
-};
 
-updateChartContainerWidth();
 </script>
 
 <style>
